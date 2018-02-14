@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.1
+// @version      0.2
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -89,13 +89,36 @@
     addEventListener ("load", function() {
         //alert("It's alive");
 
+        var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
+        targ.appendChild (scriptNode);
+
+        // planet table readability
+        var planets_can_build = tools.xpath('//*[@id="content-in"]/center/form[1]/table[1]/tbody/tr/td[4]');
+        for (var p = 0; p < planets_can_build.snapshotLength; ++p) {
+            var item = planets_can_build.snapshotItem(p);
+            var can_build = parseInt(item.innerHTML);
+            var free_slots = parseInt(item.previousElementSibling.innerHTML);
+            var parent = item.parentElement;
+            item.previousElementSibling.innerHTML = free_slots; // remove the useless (64)
+            if (free_slots == 0) {
+                parent.setAttribute('style','color: #f55');
+            } else if (can_build > 0) {
+                parent.setAttribute('style','color: #7f7');
+            } else {
+                parent.setAttribute('style','color: #ff7');
+            }
+        }
+
+        // mass-build form removal
+        var mass_build = tools.xpath('//*[@id="content-in"]/center/form[1]/table[2]',null,true);
+        mass_build.parentElement.removeChild(mass_build);
+
+
+        // build tollbox only in case a planet layout (form) is displayed
         var build_form = tools.xpath('//*[@id="content-in"]/form/input[1]',null,true);
         if (build_form == null) {
             return;
         }
-
-        var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
-        targ.appendChild (scriptNode);
 
         var all = tools.xpath('//*[@id="all-in"]',null,true);
         var toolbox = document.createElement("div");
