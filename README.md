@@ -5,6 +5,8 @@ A collection of user scripts for sgwg.net and stargate-dm.cz browser games. Work
 
 I welcome contributions.
 
+A user style is included - see custom.css. It is also available from https://userstyles.org/styles/155736/sgwg-net-stargate-dm-cz
+
 
 License
 =======

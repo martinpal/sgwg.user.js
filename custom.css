@@ -1,0 +1,55 @@
+@-moz-document url-prefix("http://sgwg.net"), url-prefix("http://stargate-dm.cz") {
+/* general */
+#topline {
+    display: none !important;
+}
+
+#head > div.banner {
+    display: none !important;
+}
+
+#logo > a {
+    top: 0px !important;
+}
+
+#head {
+    height: 87px !important;
+}
+
+#navmenu {
+    top: 0 !important;
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    z-index: 100 !important;
+}
+
+/* forum */
+.msg_content {
+    background-color: black !important;
+}
+
+.barva_ministr {
+    color: rgb(0, 240, 0) !important;
+}
+
+.barva_vyhnanec {
+    color: rgb(255, 150, 255) !important;
+}
+
+.barva_general {
+    color: rgb(234, 169, 46) !important;
+}
+
+.barva_obcan {
+    color: rgb(160, 174, 255) !important;
+}
+
+.barva_moderator {
+    color: rgb(240, 117, 40) !important;
+}
+
+/* nastenka rasy */
+#vladni_nastenka > div > strong:nth-child(11) > a:nth-child(6) > span {
+    color: white !important;
+}
+}
