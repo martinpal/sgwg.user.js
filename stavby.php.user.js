@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.2
+// @version      0.3
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -111,7 +111,9 @@
 
         // mass-build form removal
         var mass_build = tools.xpath('//*[@id="content-in"]/center/form[1]/table[2]',null,true);
-        mass_build.parentElement.removeChild(mass_build);
+        if ( mass_build != null) {
+            mass_build.parentElement.removeChild(mass_build);
+        }
 
 
         // build tollbox only in case a planet layout (form) is displayed
