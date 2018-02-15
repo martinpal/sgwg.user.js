@@ -93,7 +93,10 @@
         targ.appendChild (scriptNode);
 
         // planet table readability
-        var planets_can_build = tools.xpath('//*[@id="content-in"]/center/form[1]/table[1]/tbody/tr/td[4]');
+        var planets_can_build = tools.xpath('//*[@id="content-in"]/center/form[1]/table[1]/tbody/tr/td[5]'); // fifth column on sgwg.net
+        if (planets_can_build.snapshotLength == 0) {
+            planets_can_build = tools.xpath('//*[@id="content-in"]/center/form[1]/table[1]/tbody/tr/td[4]'); // fourth column on stargate-dm.cz
+        }
         for (var p = 0; p < planets_can_build.snapshotLength; ++p) {
             var item = planets_can_build.snapshotItem(p);
             var can_build = parseInt(item.innerHTML);
