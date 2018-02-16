@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.3
+// @version      0.4
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -112,6 +112,12 @@
             }
         }
 
+        // h1 heading removal
+        var h1 = tools.xpath('//*[@id="content-in"]/h1',null,true);
+        if ( h1 != null) {
+            h1.parentElement.removeChild(h1);
+        }
+
         // mass-build form removal
         var mass_build = tools.xpath('//*[@id="content-in"]/center/form[1]/table[2]',null,true);
         if ( mass_build != null) {
@@ -125,10 +131,34 @@
             return;
         }
 
-        var all = tools.xpath('//*[@id="all-in"]',null,true);
+        var submit_button = tools.xpath('//*[@id="content-in"]/form/input[1]', null, true);
+        var this_planet_name = tools.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[1]', null, true).innerHTML;
+        var next_planet = '#';
+        var previous_planet = '#';
+        var this_planet = '#';
+        var planets = tools.xpath('//*[@id="content-in"]/center/form[1]/table/tbody/tr/td[1]/a[1]');
+        var pr = 0;
+        for (pr = 0; pr < planets.snapshotLength && planets.snapshotItem(pr).innerHTML != this_planet_name; ++pr) {
+        }
+        if (pr > 0) {
+            previous_planet = planets.snapshotItem(pr-1).getAttribute("href");
+        }
+        if (pr < planets.snapshotLength) {
+            this_planet = planets.snapshotItem(pr).getAttribute("href");
+        }
+        if (pr + 1 < planets.snapshotLength) {
+            next_planet = planets.snapshotItem(pr+1).getAttribute("href");
+        }
+        var prev_next = document.createElement("div");
+        prev_next.innerHTML = '<div style="float: right; font-size: 185%;"><a href="' +previous_planet+ '">&lt;&lt;</a>&nbsp;<a href="' +this_planet+ '">' +this_planet_name+ '</a>&nbsp;<a href="' +next_planet+ '">&gt;&gt;</a></div>';
+        submit_button.parentNode.insertBefore(prev_next, submit_button);
+
+
+        var all = tools.xpath('//*[@id="all"]',null,true);
+        var rect = submit_button.getBoundingClientRect();
         var toolbox = document.createElement("div");
         toolbox.setAttribute("id", "toolbox");
-        toolbox.setAttribute("style","position: fixed; left: 1330px; top: 273px; width: 150px;");
+        toolbox.setAttribute("style","position: absolute; width: 150px; top: " +(rect.top+4)+ "px; left: " +(rect.left+710)+ "px; z-index: 99");
 
         var buildings = tools.xpath('//*[@id="seznam_budov"]/table/tbody/tr/td[1]/img');
         for(var i = 0; i < buildings.snapshotLength; ++i) {
@@ -161,6 +191,6 @@
             div.appendChild(div_any);
             toolbox.appendChild(div);
         }
-        all.appendChild(toolbox);
+        all.parentNode.insertBefore(toolbox, all);
     }, false);
 })();
