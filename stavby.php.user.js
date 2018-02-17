@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.4
+// @version      0.5
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -44,6 +44,12 @@
         this.building_tile['b'] = "t1";
         this.building_tile['c'] = "t3";
 
+        this.change_from = [ ];
+        this.change_from['2'] = '3';
+        this.change_from['3'] = '2';
+        this.change_from['5'] = '7';
+        this.change_from['7'] = '5';
+
         this.batch_sizes = [1,2,5,10];
 
         this.xpath = function(query, object, qt) { // Searches object (or document) for string/regex, returning a list of nodes that satisfy the string/regex
@@ -54,6 +60,7 @@
         };
 
         this.changed_tiles = 0;
+
         this.my_build = function(what,fitting,src,count) {
             var can_build_today_elem = this.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[4]',null,true);
             var can_build_today = parseInt(can_build_today_elem.innerHTML);
@@ -70,6 +77,28 @@
                     document.getElementById('pp' +t).src=src;
                     document.getElementById('pp' +t).style.borderWidth="2px";
                     document.getElementById('pp' +t).style.borderColor="yellow";
+                    document.getElementById('pp' +t).style.borderStyle="dotted";
+                    this.changed_tiles++;
+                    if (++placed >= count) {
+                        return;
+                    }
+                }
+            }
+        };
+
+        this.my_change = function(what,orig,src,count) {
+            var can_build_today_elem = this.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[4]',null,true);
+            var can_build_today = parseInt(can_build_today_elem.innerHTML);
+            //alert("Build: " +what+ ", " +fitting+ ", " +needed_tile);
+            var placed = 0;
+            for (var t=1;t<=64 && can_build_today > this.changed_tiles;t++) {
+                var tile = this.xpath('//*[@id="pp' +t+ '"]',null,true);
+                if (document.getElementById('hh' +t).value == parseInt(orig)) {
+                    //alert("Can place " +what+ " on tile " +t+ " type " +type);
+                    document.getElementById('hh' +t).value=what;
+                    document.getElementById('pp' +t).src=src;
+                    document.getElementById('pp' +t).style.borderWidth="2px";
+                    document.getElementById('pp' +t).style.borderColor="orange";
                     document.getElementById('pp' +t).style.borderStyle="dotted";
                     this.changed_tiles++;
                     if (++placed >= count) {
@@ -158,7 +187,7 @@
         var rect = submit_button.getBoundingClientRect();
         var toolbox = document.createElement("div");
         toolbox.setAttribute("id", "toolbox");
-        toolbox.setAttribute("style","position: absolute; width: 150px; top: " +(rect.top+4)+ "px; left: " +(rect.left+710)+ "px; z-index: 99");
+        toolbox.setAttribute("style","position: absolute; width: 225px; top: " +(rect.top+4)+ "px; left: " +(rect.left+710)+ "px; z-index: 99");
 
         var buildings = tools.xpath('//*[@id="seznam_budov"]/table/tbody/tr/td[1]/img');
         for(var i = 0; i < buildings.snapshotLength; ++i) {
@@ -187,8 +216,23 @@
             div_any_innerHTML += '</div>';
             div_any.innerHTML = div_any_innerHTML;
 
+            var div_change = document.createElement("div");
+            var change_from_building_code = tools.change_from[building_code];
+            if (change_from_building_code != undefined) {
+                div_change = document.createElement("div");
+                var div_change_innerHTML = '<div style="width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');">';
+                for (var d=0;d<tools.batch_sizes.length;d++) {
+                    div_change_innerHTML += '<div style="width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle;" onclick="tools.my_change(\'' +building_code+ '\',' +change_from_building_code+ ',\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
+                }
+                div_change_innerHTML += '</div>';
+                div_change.innerHTML = div_change_innerHTML;
+            }
             div.appendChild(div_fitting);
             div.appendChild(div_any);
+            div.appendChild(div_change);
+            var cleaner = document.createElement("hr");
+            cleaner.setAttribute("style","clear: both; display: block; visibility: hidden;");
+            div.appendChild(cleaner);
             toolbox.appendChild(div);
         }
         all.parentNode.insertBefore(toolbox, all);
