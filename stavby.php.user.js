@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.5
+// @version      0.6
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
 // @match        http://sgwg.net/stavby.php*
-// @domains      stargate-dm.cz
 // @grant        none
 // @license      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // ==/UserScript==
@@ -45,10 +44,11 @@
         this.building_tile['c'] = "t3";
 
         this.change_from = [ ];
-        this.change_from['2'] = '3';
-        this.change_from['3'] = '2';
-        this.change_from['5'] = '7';
-        this.change_from['7'] = '5';
+        this.change_from['2'] = [ '3' ]; // TRI -> NAQ
+        this.change_from['3'] = [ '2' ]; // NAQ -> TRI
+        this.change_from['5'] = [ '7' ]; // lod -> kas
+        this.change_from['6'] = [ '2', '3' ]; // NAQ -> LAB
+        this.change_from['7'] = [ '5' ]; // kas -> lod
 
         this.batch_sizes = [1,2,5,10];
 
@@ -187,7 +187,7 @@
         var rect = submit_button.getBoundingClientRect();
         var toolbox = document.createElement("div");
         toolbox.setAttribute("id", "toolbox");
-        toolbox.setAttribute("style","position: absolute; width: 225px; top: " +(rect.top+4)+ "px; left: " +(rect.left+710)+ "px; z-index: 99");
+        toolbox.setAttribute("style","position: absolute; width: 300px; top: " +(rect.top+4)+ "px; left: " +(rect.left+710)+ "px; z-index: 99");
 
         var buildings = tools.xpath('//*[@id="seznam_budov"]/table/tbody/tr/td[1]/img');
         for(var i = 0; i < buildings.snapshotLength; ++i) {
@@ -216,20 +216,25 @@
             div_any_innerHTML += '</div>';
             div_any.innerHTML = div_any_innerHTML;
 
-            var div_change = document.createElement("div");
+            var div_change = [ ];
             var change_from_building_code = tools.change_from[building_code];
             if (change_from_building_code != undefined) {
-                div_change = document.createElement("div");
-                var div_change_innerHTML = '<div style="width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');">';
-                for (var d=0;d<tools.batch_sizes.length;d++) {
-                    div_change_innerHTML += '<div style="width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle;" onclick="tools.my_change(\'' +building_code+ '\',' +change_from_building_code+ ',\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
+                for (var c=0; c<change_from_building_code.length; c++) {
+                    var next_div_change = document.createElement("div");
+                    var div_change_innerHTML = '<div style="width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');">';
+                    for (var d=0;d<tools.batch_sizes.length;d++) {
+                        div_change_innerHTML += '<div style="width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle;" onclick="tools.my_change(\'' +building_code+ '\',' +change_from_building_code[c]+ ',\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
+                    }
+                    div_change_innerHTML += '</div>';
+                    next_div_change.innerHTML = div_change_innerHTML;
+                    div_change.push(next_div_change);
                 }
-                div_change_innerHTML += '</div>';
-                div_change.innerHTML = div_change_innerHTML;
             }
             div.appendChild(div_fitting);
             div.appendChild(div_any);
-            div.appendChild(div_change);
+            for (var dc = 0; dc<div_change.length; dc++) {
+                div.appendChild(div_change[dc]);
+            }
             var cleaner = document.createElement("hr");
             cleaner.setAttribute("style","clear: both; display: block; visibility: hidden;");
             div.appendChild(cleaner);
