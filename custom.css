@@ -23,6 +23,10 @@
     z-index: 100 !important;
 }
 
+#head > div.banner {
+    display: none !important;
+}
+
 /* forum */
 .msg_content {
     background-color: black !important;
