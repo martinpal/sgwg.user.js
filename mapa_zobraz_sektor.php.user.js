@@ -1,0 +1,79 @@
+// ==UserScript==
+// @name         mapa_zobraz_sektor.php
+// @namespace    http://stargate-dm.cz/
+// @version      0.1
+// @description  Utils for stavby.php
+// @author       on/off
+// @match        http://stargate-dm.cz/mapa_zobraz_sektor.php*
+// @match        http://sgwg.net/mapa_zobraz_sektor.php*
+// @grant        none
+// @license      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    function my_tools() {
+
+        this.xpath = function(query, object, qt) { // Searches object (or document) for string/regex, returning a list of nodes that satisfy the string/regex
+            if( !object ) object = document;
+            var type = qt ? XPathResult.FIRST_ORDERED_NODE_TYPE: XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE;
+            var ret = document.evaluate(query, object, null, type, null);
+            return (qt ? ret.singleNodeValue : ret);
+        };
+
+        this.change_sector = function(id) { // sets the sector in the form and submits the form
+            var combo = tools.xpath('//*[@id="content-in"]/center/form/table/tbody/tr/td[1]/table/tbody/tr[2]/td/select', null, true);
+            combo.value = id;
+            var form = tools.xpath('//*[@id="content-in"]/center/form', null, true);
+            form.submit();
+        };
+    }
+    let tools = new my_tools();
+
+    var D                                   = document;
+    var scriptNode                          = D.createElement ('script');
+    scriptNode.type                         = "text/javascript";
+    scriptNode.textContent  = my_tools.toString() + 'let tools = new my_tools();';
+
+    addEventListener ("load", function() {
+        //alert("It's alive");
+
+        var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
+        targ.appendChild (scriptNode);
+
+        var sectors = tools.xpath('//*[@id="content-in"]/center/form/table/tbody/tr/td[1]/table/tbody/tr[2]/td/select/option');
+        var i = 0;
+        for(i = 0; i < sectors.snapshotLength; ++i) {
+            var selected = sectors.snapshotItem(i).getAttribute('selected');
+            if (selected != null) {
+                break;
+            }
+        }
+        var prev_sector = null;
+        var this_sector = null;
+        var next_sector = null;
+        if ( i-1 >= 0 && i < sectors.snapshotLength) {
+            prev_sector = sectors.snapshotItem(i-1).innerHTML;
+        }
+        if ( i >= 0  && i < sectors.snapshotLength) {
+            this_sector = sectors.snapshotItem(i).innerHTML;
+        }
+        if ( i >= 0  && i+1 < sectors.snapshotLength) {
+            next_sector = sectors.snapshotItem(i+1).innerHTML;
+        }
+        var heading = tools.xpath('//*[@id="content-in"]/h1', null, true);
+        var planet_iterator_div = document.createElement('div');
+        if (i>0 && i<sectors.snapshotLength-1) {
+            planet_iterator_div.innerHTML = '<div style="float: right; font-size: 185%;"><a href="#" onclick="tools.change_sector(' +i+ '); return false;">&lt;&lt;</a>&nbsp;<a href="#" onclick="tools.change_sector(' +(i+1)+ ')">' +this_sector+ '</a>&nbsp;<a href="#" onclick="tools.change_sector(' +(i+2)+ '); return false;">&gt;&gt;</a></div>';
+        } else if (i==0) {
+            planet_iterator_div.innerHTML = '<div style="float: right; font-size: 185%;"><a href="#" onclick="return false;">&lt;&lt;</a>&nbsp;<a href="#" onclick="tools.change_sector(' +(i+1)+ ')">' +this_sector+ '</a>&nbsp;<a href="#" onclick="tools.change_sector(' +(i+2)+ '); return false;">&gt;&gt;</a></div>';
+        } else {
+            planet_iterator_div.innerHTML = '<div style="float: right; font-size: 185%;"><a href="#" onclick="tools.change_sector(' +i+ '); return false;">&lt;&lt;</a>&nbsp;<a href="#" onclick="tools.change_sector(' +(i+1)+ ')">' +this_sector+ '</a>&nbsp;<a href="#" onclick="return false;">&gt;&gt;</a></div>';
+        }
+        heading.parentNode.insertBefore(planet_iterator_div, heading);
+
+
+
+    }, false);
+})();
