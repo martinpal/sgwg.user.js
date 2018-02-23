@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.2
+// @version      0.3
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -31,6 +31,12 @@
     addEventListener ("load", function() {
         var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
         targ.appendChild (scriptNode);
+
+        // do nothing if not logged in
+        var user_img = shortcut_tools.xpath('//*[@id="info"]/img', null, true);
+        if (user_img == null) {
+            return;
+        }
 
         // top shortcuts for phorums and various stuff
         var head = shortcut_tools.xpath('//*[@id="head"]', null, true);
