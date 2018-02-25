@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mapa_zobraz_galaxy.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.1
+// @version      0.2
 // @description  Utils for mapa_zobraz_galaxy.php
 // @author       on/off
 // @match        http://stargate-dm.cz/mapa_zobraz_galaxy.php*
@@ -28,7 +28,7 @@
             var rect = document.getElementById('report_button').getBoundingClientRect();
             var unoccupied_sectors = document.createElement("div");
             unoccupied_sectors.setAttribute("id", "unoccupied_sectors");
-            unoccupied_sectors.setAttribute("style","position: absolute; width: 450px; top: " +(rect.top+4)+ "px; left: " +(rect.left+110)+ "px; z-index: 99; font-size: 75%; text-align: left;");
+            unoccupied_sectors.setAttribute("style","position: absolute; width: 150px; top: " +(rect.top-4)+ "px; left: " +(rect.left+110)+ "px; z-index: 99; font-size: 75%; text-align: left; background-color: rgba(0,0,0,0.5); padding: 1em; border: 1px solid black;");
             all.parentNode.insertBefore(unoccupied_sectors, all);
             var sectors = this.xpath('//*[@id="map"]/area');
 //            var sectors = this.xpath('//*[@id="map"]/area[1]');
@@ -61,7 +61,7 @@
                         var pos2 = data.lastIndexOf(to_find, pos);
                         pos2 += to_find.length;
                         var sector_id = parseInt(data.substring(pos2));
-                        unoccupied_sectors.innerHTML += "<div>" +sector_name+ " (" +sector_id+ "): " +unoccupied+ "</div>";
+                        unoccupied_sectors.innerHTML += '<div><a href="' +href+ '">' +sector_name+ " (" +sector_id+ ")</a>: " +unoccupied+ "</div>";
                     }
                 });
             }
