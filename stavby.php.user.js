@@ -133,7 +133,11 @@
             var parent = item.parentElement;
             item.previousElementSibling.innerHTML = free_slots; // remove the useless (64)
             if (free_slots == 0) {
-                parent.setAttribute('style','color: #f55');
+                if ( can_build > 0 ) {
+                    parent.setAttribute('style','color: #f82');
+                } else {
+                    parent.setAttribute('style','color: #f55');
+                }
             } else if (can_build > 0) {
                 parent.setAttribute('style','color: #7f7');
             } else {
