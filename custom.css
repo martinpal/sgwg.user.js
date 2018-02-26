@@ -1,5 +1,9 @@
 @-moz-document url-prefix("http://sgwg.net"), url-prefix("http://stargate-dm.cz") {
 /* general */
+#snowflakeContainer {
+    display: none !important;
+}
+
 #topline {
     display: none !important;
 }
