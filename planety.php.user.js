@@ -35,7 +35,7 @@
                     var id_pos = this_link.indexOf('=') + 1;
                     var this_id = this_link.substr(id_pos);
                     var build_link = document.createElement('a');
-                    build_link.innerHTML = '<a href="/stavby.php?nap=' +this_id+ '&amp;ne_zast_plan=&amp;ne_stav_den=&amp;ne_kanly=" style="margin-left: .5em;">build</a>';
+                    build_link.innerHTML = '<a href="/stavby.php?nap=' +this_id+ '&amp;ne_zast_plan=&amp;ne_stav_den=&amp;ne_kanly=" style="margin-left: .5em;">stavět</a>';
                     this_planet.parentNode.insertBefore(build_link, this_planet.nextSibling);
                 }
             }
