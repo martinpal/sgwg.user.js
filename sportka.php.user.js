@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         sportka.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.1
+// @version      0.2
 // @description  Automatic bet in sportka.php
 // @author       on/off
 // @match        http://stargate-dm.cz/sportka.php*
@@ -23,7 +23,11 @@
     addEventListener("load", function() {
         for (var i=1;i<=20;i++) {
             var input = xpath('//*[@id="content-in"]/center[2]/form/table/tbody/tr[2]/td[' +i+ ']/input',null,true);
-            input.value=(i-1)*5+4;
+            var min = (i-1)*5;
+            if (min <= 0) {
+                min = 1;
+            }
+            input.value=Math.floor(Math.random()*(i*5-min))+min;
         }
     });
 })();
