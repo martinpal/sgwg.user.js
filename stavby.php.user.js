@@ -47,7 +47,7 @@
         this.change_from['2'] = [ '3' ]; // TRI -> NAQ
         this.change_from['3'] = [ '2' ]; // NAQ -> TRI
         this.change_from['5'] = [ '7' ]; // lod -> kas
-        this.change_from['6'] = [ '2', '3' ]; // NAQ -> LAB
+        this.change_from['6'] = [ '2', '3', '5', '7' ]; // NAQ/TRI/lod/kas -> LAB
         this.change_from['7'] = [ '5' ]; // kas -> lod
 
         this.batch_sizes = [1,2,5,10];
@@ -187,7 +187,7 @@
         var rect = submit_button.getBoundingClientRect();
         var toolbox = document.createElement("div");
         toolbox.setAttribute("id", "toolbox");
-        toolbox.setAttribute("style","position: absolute; width: 300px; top: " +(rect.top+4)+ "px; left: " +(rect.left+710)+ "px; z-index: 99");
+        toolbox.setAttribute("style","position: absolute; width: 450px; top: " +(rect.top+4)+ "px; left: " +(rect.left+710)+ "px; z-index: 99");
 
         var buildings = tools.xpath('//*[@id="seznam_budov"]/table/tbody/tr/td[1]/img');
         for(var i = 0; i < buildings.snapshotLength; ++i) {
