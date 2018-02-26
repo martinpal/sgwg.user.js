@@ -8,6 +8,11 @@
     display: none !important;
 }
 
+#all-in {
+    margin-left: 32px !important;
+    margin-right: 100% !important;
+}
+
 #head > div.banner {
     display: none !important;
 }
