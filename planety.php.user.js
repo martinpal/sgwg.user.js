@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         planety.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.1
+// @version      0.2
 // @description  Utils for planety.php
 // @author       on/off
 // @match        http://stargate-dm.cz/planety.php*
