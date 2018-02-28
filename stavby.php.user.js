@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.9
+// @version      0.10
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -189,14 +189,38 @@
             mass_build.parentElement.removeChild(mass_build);
         }
 
-
-        // build tollbox only in case a planet layout (form) is displayed
+        // the other parts only in case a planet layout (form) is displayed...
         var build_form = tools.xpath('//*[@id="content-in"]/form/input[1]',null,true);
         if (build_form == null) {
             return;
         }
 
+        var all = tools.xpath('//*[@id="all"]',null,true);
         var submit_button = tools.xpath('//*[@id="content-in"]/form/input[1]', null, true);
+        var rect = submit_button.getBoundingClientRect();
+
+        // building stats
+        var stats = document.createElement("div");
+        stats.setAttribute("id", "stats");
+        stats.setAttribute("style","position: absolute; width: 600px; top: 0px; left: " +(rect.left+710)+ "px; z-index: 99; font-size: 75%; text-align: left; background-color: rgba(0,0,0,0.5); padding: 1em 0 1em; border: 1px solid black;");
+        var stats_table = '<table>';
+        var stats_array = [ ];
+        for (var tile = 1; tile <=64; ++tile) {
+            var building = document.getElementById('hh' +tile).value;
+            if (stats_array[building] == undefined) {
+                stats_array[building] = 1;
+            } else {
+                stats_array[building]++;
+            }
+        }
+        stats_array.forEach(function(v,k) {
+            stats_table += '<tr><td style="text-align: left; padding: 0 1em 0;">' +tools.building_name[k.toString()]+ '</td><td style="text-align: left; padding: 0 1em 0;">' +v+ '</td></tr>';
+        });
+        stats_table += '</table>';
+        stats.innerHTML = stats_table;
+        all.parentNode.insertBefore(stats, all);
+
+        // planet iterator (<< planet_name >>)
         var this_planet_name = tools.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[1]', null, true).innerHTML;
         var next_planet = '#';
         var previous_planet = '#';
@@ -219,8 +243,7 @@
         submit_button.parentNode.insertBefore(prev_next, submit_button);
 
 
-        var all = tools.xpath('//*[@id="all"]',null,true);
-        var rect = submit_button.getBoundingClientRect();
+        // build tollbox
         var toolbox = document.createElement("div");
         toolbox.setAttribute("id", "toolbox");
         toolbox.setAttribute("style","position: absolute; width: 450px; top: " +(rect.top+4)+ "px; left: " +(rect.left+710)+ "px; z-index: 99");
