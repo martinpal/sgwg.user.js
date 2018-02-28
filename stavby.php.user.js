@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.10
+// @version      0.11
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -37,8 +37,8 @@
         this.building_tile['6'] = "t1";
         this.building_tile['7'] = "t2";
         this.building_tile['a'] = "t3";
-        this.building_tile['b'] = "t1";
-        this.building_tile['c'] = "t3";
+        this.building_tile['b'] = "t3";
+        this.building_tile['c'] = "t1";
 
         this.picture_to_building_id = [ ];
         this.picture_to_building_id['1'] = "1";
