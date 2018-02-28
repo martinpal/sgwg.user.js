@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.8
+// @version      0.9
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -17,21 +17,18 @@
     //   t1: prumyslova
     //   t2: vojenska
     //   t3: civilni
-    // Budovy
-    //   0: nic
-    //   1: mesto
-    //   2: NAQ dul
-    //   3: TRI dul
-    //   4:
-    //   5: kasarna
-    //   6: laborator
-    //   7: lodenice
-    //   8:
-    //   9:
-    //   a: park
-    //   b: Stargate
-    //   c: mincovna
     function my_tools() {
+        this.building_name = [ ];
+        this.building_name['1'] = "Město";
+        this.building_name['2'] = "Naquadahový důl";
+        this.building_name['3'] = "Triniový důl";
+        this.building_name['5'] = "Kasárna";
+        this.building_name['6'] = "Laboratoř";
+        this.building_name['7'] = "Loděnice";
+        this.building_name['a'] = "Park";
+        this.building_name['b'] = "Hvězdná brána";
+        this.building_name['c'] = "Mincovna";
+
         this.building_tile = [ ];
         this.building_tile['1'] = "t3";
         this.building_tile['2'] = "t1";
@@ -51,15 +48,15 @@
         this.picture_to_building_id['6'] = "6";
         this.picture_to_building_id['7'] = "7";
         this.picture_to_building_id['10'] = "a";
-        this.picture_to_building_id['11'] = "c"; // this id is swapped with next line
+        this.picture_to_building_id['11'] = "c"; // this id is swapped with next line on the server, hence the need for this table
         this.picture_to_building_id['12'] = "b";
 
         this.change_from = [ ];
-        this.change_from['2'] = [ '3' ]; // TRI -> NAQ
-        this.change_from['3'] = [ '2' ]; // NAQ -> TRI
-        this.change_from['5'] = [ '7' ]; // lod -> kas
-        this.change_from['6'] = [ '2', '3', '5', '7' ]; // NAQ/TRI/lod/kas -> LAB
-        this.change_from['7'] = [ '5' ]; // kas -> lod
+        this.change_from['2'] = [ '3', 'c' ]; // TRI/min -> NAQ
+        this.change_from['3'] = [ '2', 'c' ]; // NAQ/min -> TRI
+        this.change_from['5'] = [ '2', '3', '6', '7' ]; // NAQ/TRI/min/lod -> kas
+        this.change_from['6'] = [ '2', '3', '5', '7', 'c' ]; // NAQ/TRI/lod/kas/min -> LAB
+        this.change_from['7'] = [ '2', '3', '5', '6' ]; // NAQ/TRI/kas/min -> lod
 
         this.batch_sizes = [1,2,5,10];
 
@@ -72,6 +69,13 @@
 
         this.changed_tiles = 0;
 
+        this.tile_type = function(tile) {
+            var tile = this.xpath('//*[@id="pp' +tile+ '"]',null,true);
+            var on_click = tile.getAttribute('onclick');
+            var type = on_click.slice(7,9);
+            return type;
+        };
+
         this.my_build = function(what,fitting,src,count) {
             var can_build_today_elem = this.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[4]',null,true);
             var can_build_today = parseInt(can_build_today_elem.innerHTML);
@@ -79,9 +83,7 @@
             //alert("Build: " +what+ ", " +fitting+ ", " +needed_tile);
             var placed = 0;
             for (var t=1;t<=64 && can_build_today > this.changed_tiles;t++) {
-                var tile = this.xpath('//*[@id="pp' +t+ '"]',null,true);
-                var on_click = tile.getAttribute('onclick');
-                var type = on_click.slice(7,9);
+                var type = this.tile_type(t);
                 if ((document.getElementById('hh' +t).value == 0) && (!fitting || (type == needed_tile))) {
                     //alert("Can place " +what+ " on tile " +t+ " type " +type);
                     document.getElementById('hh' +t).value=what;
@@ -98,14 +100,33 @@
         };
 
         this.my_change = function(what,orig,src,count) {
+            //alert("Build: " +what+ ", " +orig+ ", " +src+ ", " +count);
             var can_build_today_elem = this.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[4]',null,true);
             var can_build_today = parseInt(can_build_today_elem.innerHTML);
-            //alert("Build: " +what+ ", " +fitting+ ", " +needed_tile);
+            var needed_tile = this.building_tile[what];
             var placed = 0;
+            // first try to place on suitable tiles ...
             for (var t=1;t<=64 && can_build_today > this.changed_tiles;t++) {
-                var tile = this.xpath('//*[@id="pp' +t+ '"]',null,true);
-                if (document.getElementById('hh' +t).value == parseInt(orig)) {
-                    //alert("Can place " +what+ " on tile " +t+ " type " +type);
+                var type = this.tile_type(t);
+                //alert(type+ " " +document.getElementById('hh' +t).value+ " " +orig+ " " +needed_tile);
+                if (document.getElementById('hh' +t).value == orig && (type == needed_tile)) {
+                    //alert("Build: " +what+ ", " +orig+ ", " +src+ ", " +count);
+                    document.getElementById('hh' +t).value=what;
+                    document.getElementById('pp' +t).src=src;
+                    document.getElementById('pp' +t).style.borderWidth="2px";
+                    document.getElementById('pp' +t).style.borderColor="orange";
+                    document.getElementById('pp' +t).style.borderStyle="dotted";
+                    this.changed_tiles++;
+                    if (++placed >= count) {
+                        return;
+                    }
+                }
+            }
+            // ... then continue with not suitable tiles
+            for (var t=1;t<=64 && can_build_today > this.changed_tiles;t++) {
+                var type = this.tile_type(t);
+                if (document.getElementById('hh' +t).value == orig && (type != needed_tile)) {
+                    //alert("Build: " +what+ ", " +orig+ ", " +src+ ", " +count);
                     document.getElementById('hh' +t).value=what;
                     document.getElementById('pp' +t).src=src;
                     document.getElementById('pp' +t).style.borderWidth="2px";
