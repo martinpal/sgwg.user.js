@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.7
+// @version      0.8
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -29,8 +29,8 @@
     //   8:
     //   9:
     //   a: park
-    //   b: mincovna
-    //   c: Stargate
+    //   b: Stargate
+    //   c: mincovna
     function my_tools() {
         this.building_tile = [ ];
         this.building_tile['1'] = "t3";
@@ -42,6 +42,17 @@
         this.building_tile['a'] = "t3";
         this.building_tile['b'] = "t1";
         this.building_tile['c'] = "t3";
+
+        this.picture_to_building_id = [ ];
+        this.picture_to_building_id['1'] = "1";
+        this.picture_to_building_id['2'] = "2";
+        this.picture_to_building_id['3'] = "3";
+        this.picture_to_building_id['5'] = "5";
+        this.picture_to_building_id['6'] = "6";
+        this.picture_to_building_id['7'] = "7";
+        this.picture_to_building_id['10'] = "a";
+        this.picture_to_building_id['11'] = "c"; // this id is swapped with next line
+        this.picture_to_building_id['12'] = "b";
 
         this.change_from = [ ];
         this.change_from['2'] = [ '3' ]; // TRI -> NAQ
@@ -200,7 +211,7 @@
             var dot_pos = src.lastIndexOf('.JPG');
             var underscore_pos = src.lastIndexOf('_');
             var building_id = src.slice(underscore_pos+1,dot_pos);
-            var building_code = parseInt(building_id).toString(16);
+            var building_code = tools.picture_to_building_id[building_id];
 
             var div = document.createElement("div");
 
@@ -227,7 +238,7 @@
                     var next_div_change = document.createElement("div");
                     var div_change_innerHTML = '<div style="width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');">';
                     for (var d=0;d<tools.batch_sizes.length;d++) {
-                        div_change_innerHTML += '<div style="width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle;" onclick="tools.my_change(\'' +building_code+ '\',' +change_from_building_code[c]+ ',\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
+                        div_change_innerHTML += '<div style="width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle;" onclick="tools.my_change(\'' +building_code+ '\',\'' +change_from_building_code[c]+ '\',\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
                     }
                     div_change_innerHTML += '</div>';
                     next_div_change.innerHTML = div_change_innerHTML;
