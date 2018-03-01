@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.11
+// @version      0.12
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -13,11 +13,12 @@
 (function() {
     'use strict';
 
-    // Pole
-    //   t1: prumyslova
-    //   t2: vojenska
-    //   t3: civilni
     function my_tools() {
+        this.tile_name = [];
+        this.tile_name['t1'] = "Průmyslová";
+        this.tile_name['t2'] = "Vojenská";
+        this.tile_name['t3'] = "Civilní";
+
         this.building_name = [ ];
         this.building_name['1'] = "Město";
         this.building_name['2'] = "Naquadahový důl";
@@ -202,19 +203,44 @@
         // building stats
         var stats = document.createElement("div");
         stats.setAttribute("id", "stats");
-        stats.setAttribute("style","position: absolute; width: 600px; top: 0px; left: " +(rect.left+710)+ "px; z-index: 99; font-size: 75%; text-align: left; background-color: rgba(0,0,0,0.5); padding: 1em 0 1em; border: 1px solid black;");
-        var stats_table = '<table>';
+        stats.setAttribute("style","position: absolute; top: 0px; left: " +(rect.left+715)+ "px; z-index: 99; font-size: 75%; text-align: left; padding: 1em 0 1em; border: 1px solid black;");
         var stats_array = [ ];
+        var tile_stats_array = [ ];
+        tile_stats_array["t1"] = 0;
+        tile_stats_array["t2"] = 0;
+        tile_stats_array["t3"] = 0;
         for (var tile = 1; tile <=64; ++tile) {
             var building = document.getElementById('hh' +tile).value;
             if (stats_array[building] == undefined) {
-                stats_array[building] = 1;
+                stats_array[building] = { all: 0, fitting: 0, other: 0 };
+            }
+            var tile_type = tools.tile_type(tile);
+            tile_stats_array[tile_type]++;
+            stats_array[building].all++;
+            if (tile_type == tools.building_tile[building] ) {
+                stats_array[building].fitting++;
             } else {
-                stats_array[building]++;
+                stats_array[building].other++;
             }
         }
+        var stats_table = '<table class="data2">';
+        for (var k=1; k<=3; k++) {
+            stats_table +=
+                '<tr>' +
+                '<td style="text-align: left; padding: 0 1em 0;">' +tools.tile_name['t'+k]+ '</td>' +
+                '<td style="text-align: left; padding: 0 1em 0;">' +tile_stats_array['t'+k]+ '</td>' +
+                '</tr>';
+        }
+        stats_table += '</table>';
+        stats_table += '<table class="data2">';
         stats_array.forEach(function(v,k) {
-            stats_table += '<tr><td style="text-align: left; padding: 0 1em 0;">' +tools.building_name[k.toString()]+ '</td><td style="text-align: left; padding: 0 1em 0;">' +v+ '</td></tr>';
+            stats_table +=
+                '<tr>' +
+                '<td style="text-align: left; padding: 0 1em 0;">' +tools.building_name[k.toString()]+ '</td>' +
+                '<td style="text-align: left; padding: 0 1em 0;">' +v.all+ '</td>' +
+                '<td style="text-align: left; padding: 0 1em 0;">' +v.fitting+ '</td>' +
+                '<td style="text-align: left; padding: 0 1em 0;">' +v.other+ '</td>' +
+                '</tr>';
         });
         stats_table += '</table>';
         stats.innerHTML = stats_table;
@@ -246,7 +272,7 @@
         // build tollbox
         var toolbox = document.createElement("div");
         toolbox.setAttribute("id", "toolbox");
-        toolbox.setAttribute("style","position: absolute; width: 450px; top: " +(rect.top+4)+ "px; left: " +(rect.left+710)+ "px; z-index: 99");
+        toolbox.setAttribute("style","position: absolute; width: 600px; top: " +(rect.top+4)+ "px; left: " +(rect.left+715)+ "px; z-index: 99");
 
         var buildings = tools.xpath('//*[@id="seznam_budov"]/table/tbody/tr/td[1]/img');
         for(var i = 0; i < buildings.snapshotLength; ++i) {
