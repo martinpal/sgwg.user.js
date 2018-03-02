@@ -223,7 +223,7 @@
         // building stats
         var stats = document.createElement("div");
         stats.setAttribute("id", "stats");
-        stats.setAttribute("style","position: absolute; top: 0px; left: " +(rect.left+715)+ "px; z-index: 99; font-size: 75%; text-align: left; padding: 1em 0 1em; border: 1px solid black;");
+        stats.setAttribute("style","position: absolute; top: 0px; left: " +(rect.left+715)+ "px; z-index: 99; font-size: 75%; text-align: left; padding: 1em 0 1em;");
         var stats_array = [ ];
         var tile_stats_array = [ ];
         tile_stats_array["t1"] = 0;
@@ -254,9 +254,13 @@
         stats_table += '</table>';
         stats_table += '<table class="data2">';
         stats_array.forEach(function(v,k) {
+            var building = tools.building_name[k.toString()];
+            if (building == undefined) {
+                building = 'Volné';
+            }
             stats_table +=
                 '<tr>' +
-                '<td style="text-align: left; padding: 0 1em 0;">' +tools.building_name[k.toString()]+ '</td>' +
+                '<td style="text-align: left; padding: 0 1em 0;">' +building+ '</td>' +
                 '<td style="text-align: left; padding: 0 1em 0;">' +v.all+ '</td>' +
                 '<td style="text-align: left; padding: 0 1em 0;">' +v.fitting+ '</td>' +
                 '<td style="text-align: left; padding: 0 1em 0;">' +v.other+ '</td>' +
@@ -304,11 +308,12 @@
             var building_code = tools.picture_to_building_id[building_id];
 
             var div = document.createElement("div");
+            var inner_style = "width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle; font-weight: bolder; -webkit-text-stroke: 1.3px #bbb;";
 
             var div_fitting = document.createElement("div");
             var div_innerHTML = '<div style="width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');">';
             for (var d=0;d<tools.batch_sizes.length;d++) {
-                div_innerHTML += '<div style="width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle;" onclick="tools.my_build(\'' +building_code+ '\',true,\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
+                div_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_build(\'' +building_code+ '\',true,\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
             }
             div_innerHTML += '</div>';
             div_fitting.innerHTML = div_innerHTML;
@@ -316,7 +321,7 @@
             var div_any = document.createElement("div");
             var div_any_innerHTML = '<div style="width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');">';
             for (d=0;d<tools.batch_sizes.length;d++) {
-                div_any_innerHTML += '<div style="width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle;" onclick="tools.my_build(\'' +building_code+ '\',false,\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
+                div_any_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_build(\'' +building_code+ '\',false,\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
             }
             div_any_innerHTML += '</div>';
             div_any.innerHTML = div_any_innerHTML;
@@ -328,7 +333,7 @@
                     var next_div_change = document.createElement("div");
                     var div_change_innerHTML = '<div style="width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');">';
                     for (var d=0;d<tools.batch_sizes.length;d++) {
-                        div_change_innerHTML += '<div style="width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle;" onclick="tools.my_change(\'' +building_code+ '\',\'' +change_from_building_code[c]+ '\',\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
+                        div_change_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_change(\'' +building_code+ '\',\'' +change_from_building_code[c]+ '\',\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
                     }
                     div_change_innerHTML += '</div>';
                     next_div_change.innerHTML = div_change_innerHTML;
