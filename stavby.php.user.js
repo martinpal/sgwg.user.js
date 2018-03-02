@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.12
+// @version      0.13
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -123,10 +123,30 @@
                     }
                 }
             }
-            // ... then continue with not suitable tiles
+            // ... then continue with not suitable tiles only replacing buildings on not stuitable (for them) tiles ...
             for (var t=1;t<=64 && can_build_today > this.changed_tiles;t++) {
                 var type = this.tile_type(t);
-                if (document.getElementById('hh' +t).value == orig && (type != needed_tile)) {
+                var current_building = document.getElementById('hh' +t).value;
+                var ideal_tile_for_current_building = this.building_tile[current_building];
+                if (current_building == orig && (type != needed_tile) && (type != ideal_tile_for_current_building)) {
+                    //alert("Build: " +what+ ", " +orig+ ", " +src+ ", " +count);
+                    document.getElementById('hh' +t).value=what;
+                    document.getElementById('pp' +t).src=src;
+                    document.getElementById('pp' +t).style.borderWidth="2px";
+                    document.getElementById('pp' +t).style.borderColor="orange";
+                    document.getElementById('pp' +t).style.borderStyle="dotted";
+                    this.changed_tiles++;
+                    if (++placed >= count) {
+                        return;
+                    }
+                }
+            }
+            // ... and lastly replace buildings on suitable tiles with the desired building
+            for (var t=1;t<=64 && can_build_today > this.changed_tiles;t++) {
+                var type = this.tile_type(t);
+                var current_building = document.getElementById('hh' +t).value;
+                var ideal_tile_for_current_building = this.building_tile[current_building];
+                if (current_building == orig && (type != needed_tile) && (type == ideal_tile_for_current_building)) {
                     //alert("Build: " +what+ ", " +orig+ ", " +src+ ", " +count);
                     document.getElementById('hh' +t).value=what;
                     document.getElementById('pp' +t).src=src;
