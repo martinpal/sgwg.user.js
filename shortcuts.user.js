@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.3
+// @version      0.4
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -41,7 +41,18 @@
         // top shortcuts for phorums and various stuff
         var head = shortcut_tools.xpath('//*[@id="head"]', null, true);
         var shortcuts = document.createElement('div');
-        shortcuts.innerHTML = '<div style="float: right; padding: 5px; background-color: rgba(0,0,0,0.5);"><a href="/forum.php?kde=1" ><span style="color:#0ff"  >NP</span></a>&nbsp;<a href="/forum.php?kde=3" ><span style="color:orange">OP</span></a>&nbsp;<a href="/forum.php?kde=2" ><span style="color:red"   >DP</span></a>&nbsp;<a href="/forum.php?kde=9" ><span style="color:#7ff"  >SF</span></a>&nbsp;<a href="/forum.php?kde=11"><span style="color:gold"  >OV</span></a>&nbsp;<a href="/forum.php?kde=18"><span style="color:green" >VF</span></a>&nbsp;<a href="/forum.php?kde=16"><span style="color:red"   >AF</span></a>&nbsp;<a href="/forum.php?kde=8" ><span style="color:#0ff"  >VIP</span></a></div>';
+        shortcuts.innerHTML =
+            '<div style="float: right; padding: 5px; background-color: rgba(0,0,0,0.5);">' +
+                '<a href="/forum.php?kde=1" ><span style="color:#0ff"     >NP</span></a>&nbsp;' +
+                '<a href="/forum.php?kde=3" ><span style="color:orange"   >OP</span></a>&nbsp;' +
+                '<a href="/forum.php?kde=2" ><span style="color:#a0aeff"  >DP</span></a>&nbsp;' +
+                '<a href="/forum.php?kde=9" ><span style="color:#7ff"     >SF</span></a>&nbsp;' +
+                '<a href="/forum.php?kde=11"><span style="color:#ff0"     >OV</span></a>&nbsp;' +
+                '<a href="/forum.php?kde=18"><span style="color:#0e0"     >VF</span></a>&nbsp;' +
+                '<a href="/forum.php?kde=16"><span style="color:red"      >AF</span></a>&nbsp;' +
+                '<a href="/forum.php?kde=8" ><span style="color:#0ff"     >VIP</span></a>&nbsp;' +
+                '<a href="/forum.php?kde=17" ><span style="color:#01baff" >DSA</span></a>' +
+            '</div>';
         head.appendChild(shortcuts);
     }, false);
 })();
