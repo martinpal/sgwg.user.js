@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.14
+// @version      0.15
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
 // @match        http://sgwg.net/stavby.php*
+// @require      http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js
 // @grant        none
 // @license      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // ==/UserScript==
@@ -227,8 +228,8 @@
         var stats = document.createElement("div");
         stats.setAttribute("id", "stats");
         stats.setAttribute("style","position: absolute; top: 0px; left: " +(rect.left+715)+ "px; z-index: 99; font-size: 75%; text-align: left; padding: 1em 0 1em;");
-        var stats_array = [ ];
-        var tile_stats_array = [ ];
+        var stats_array = { };
+        var tile_stats_array = { };
         tile_stats_array["t1"] = 0;
         tile_stats_array["t2"] = 0;
         tile_stats_array["t3"] = 0;
@@ -247,16 +248,16 @@
             }
         }
         var stats_table = '<table class="data2">';
-        for (var k=1; k<=3; k++) {
+        $.each(tile_stats_array, function(k,v) {
             stats_table +=
                 '<tr>' +
-                '<td style="text-align: left; padding: 0 1em 0;">' +tools.tile_name['t'+k]+ '</td>' +
-                '<td style="text-align: left; padding: 0 1em 0;">' +tile_stats_array['t'+k]+ '</td>' +
+                '<td style="text-align: left; padding: 0 1em 0;">' +tools.tile_name[k]+ '</td>' +
+                '<td style="text-align: left; padding: 0 1em 0;">' +v+ '</td>' +
                 '</tr>';
-        }
+        });
         stats_table += '</table>';
         stats_table += '<table class="data2">';
-        stats_array.forEach(function(v,k) {
+        $.each(stats_array, function(k,v) {
             var building = tools.building_name[k.toString()];
             if (building == undefined) {
                 building = 'Volné';
