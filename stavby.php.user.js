@@ -77,22 +77,28 @@
             return type;
         };
 
+        this.change_building = function(tile, what, img_src, is_change) {
+            var color = "yellow";
+            if (is_change) {
+                color = "orange";
+            }
+            document.getElementById('hh' +tile).value=what;
+            document.getElementById('pp' +tile).src=img_src;
+            document.getElementById('pp' +tile).style.borderWidth="2px";
+            document.getElementById('pp' +tile).style.borderColor=color;
+            document.getElementById('pp' +tile).style.borderStyle="dotted";
+            this.changed_tiles++;
+        };
+
         this.my_build = function(what,fitting,src,count) {
             var can_build_today_elem = this.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[4]',null,true);
             var can_build_today = parseInt(can_build_today_elem.innerHTML);
             var needed_tile = this.building_tile[what];
-            //alert("Build: " +what+ ", " +fitting+ ", " +needed_tile);
             var placed = 0;
             for (var t=1;t<=64 && can_build_today > this.changed_tiles;t++) {
                 var type = this.tile_type(t);
                 if ((document.getElementById('hh' +t).value == 0) && (!fitting || (type == needed_tile))) {
-                    //alert("Can place " +what+ " on tile " +t+ " type " +type);
-                    document.getElementById('hh' +t).value=what;
-                    document.getElementById('pp' +t).src=src;
-                    document.getElementById('pp' +t).style.borderWidth="2px";
-                    document.getElementById('pp' +t).style.borderColor="yellow";
-                    document.getElementById('pp' +t).style.borderStyle="dotted";
-                    this.changed_tiles++;
+                    this.change_building(t, what, src, false);
                     if (++placed >= count) {
                         return;
                     }
@@ -113,13 +119,7 @@
                 var ideal_tile_for_current_building = this.building_tile[current_building];
                 //alert(type+ " " +document.getElementById('hh' +t).value+ " " +orig+ " " +needed_tile);
                 if (current_building == orig && (type == needed_tile) && (type != ideal_tile_for_current_building)) {
-                    //alert("Build: " +what+ ", " +orig+ ", " +src+ ", " +count);
-                    document.getElementById('hh' +t).value=what;
-                    document.getElementById('pp' +t).src=src;
-                    document.getElementById('pp' +t).style.borderWidth="2px";
-                    document.getElementById('pp' +t).style.borderColor="orange";
-                    document.getElementById('pp' +t).style.borderStyle="dotted";
-                    this.changed_tiles++;
+                    this.change_building(t, what, src, true);
                     if (++placed >= count) {
                         return;
                     }
@@ -132,13 +132,7 @@
                 var ideal_tile_for_current_building = this.building_tile[current_building];
                 //alert(type+ " " +document.getElementById('hh' +t).value+ " " +orig+ " " +needed_tile);
                 if (current_building == orig && (type == needed_tile) && (type == ideal_tile_for_current_building)) {
-                    //alert("Build: " +what+ ", " +orig+ ", " +src+ ", " +count);
-                    document.getElementById('hh' +t).value=what;
-                    document.getElementById('pp' +t).src=src;
-                    document.getElementById('pp' +t).style.borderWidth="2px";
-                    document.getElementById('pp' +t).style.borderColor="orange";
-                    document.getElementById('pp' +t).style.borderStyle="dotted";
-                    this.changed_tiles++;
+                    this.change_building(t, what, src, true);
                     if (++placed >= count) {
                         return;
                     }
@@ -150,13 +144,7 @@
                 var current_building = document.getElementById('hh' +t).value;
                 var ideal_tile_for_current_building = this.building_tile[current_building];
                 if (current_building == orig && (type != needed_tile) && (type != ideal_tile_for_current_building)) {
-                    //alert("Build: " +what+ ", " +orig+ ", " +src+ ", " +count);
-                    document.getElementById('hh' +t).value=what;
-                    document.getElementById('pp' +t).src=src;
-                    document.getElementById('pp' +t).style.borderWidth="2px";
-                    document.getElementById('pp' +t).style.borderColor="orange";
-                    document.getElementById('pp' +t).style.borderStyle="dotted";
-                    this.changed_tiles++;
+                    this.change_building(t, what, src, true);
                     if (++placed >= count) {
                         return;
                     }
@@ -168,13 +156,7 @@
                 var current_building = document.getElementById('hh' +t).value;
                 var ideal_tile_for_current_building = this.building_tile[current_building];
                 if (current_building == orig && (type != needed_tile) && (type == ideal_tile_for_current_building)) {
-                    //alert("Build: " +what+ ", " +orig+ ", " +src+ ", " +count);
-                    document.getElementById('hh' +t).value=what;
-                    document.getElementById('pp' +t).src=src;
-                    document.getElementById('pp' +t).style.borderWidth="2px";
-                    document.getElementById('pp' +t).style.borderColor="orange";
-                    document.getElementById('pp' +t).style.borderStyle="dotted";
-                    this.changed_tiles++;
+                    this.change_building(t, what, src, true);
                     if (++placed >= count) {
                         return;
                     }
