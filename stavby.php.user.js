@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.17
+// @version      0.18
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -15,12 +15,12 @@
     'use strict';
 
     function my_tools() {
-        this.tile_name = [];
+        this.tile_name = { };
         this.tile_name['t1'] = "Průmyslová";
         this.tile_name['t2'] = "Vojenská";
         this.tile_name['t3'] = "Civilní";
 
-        this.building_name = [ ];
+        this.building_name = { };
         this.building_name['1'] = "Město";
         this.building_name['2'] = "Naquadahový důl";
         this.building_name['3'] = "Triniový důl";
@@ -31,7 +31,9 @@
         this.building_name['b'] = "Hvězdná brána";
         this.building_name['c'] = "Mincovna";
 
-        this.building_tile = [ ];
+        this.building_image = { }; // populated on the fly from stavby.php as the image URLs are different for each race
+
+        this.building_tile = { };
         this.building_tile['1'] = "t3";
         this.building_tile['2'] = "t1";
         this.building_tile['3'] = "t1";
@@ -42,7 +44,7 @@
         this.building_tile['b'] = "t3";
         this.building_tile['c'] = "t1";
 
-        this.picture_to_building_id = [ ];
+        this.picture_to_building_id = { };
         this.picture_to_building_id['1'] = "1";
         this.picture_to_building_id['2'] = "2";
         this.picture_to_building_id['3'] = "3";
@@ -52,8 +54,10 @@
         this.picture_to_building_id['10'] = "a";
         this.picture_to_building_id['11'] = "c"; // this id is swapped with next line on the server, hence the need for this table
         this.picture_to_building_id['12'] = "b";
+        this.picture_to_building_id['obr/budovy/brana'] = "b";   // hack for sgwg.net Kryona
+        this.picture_to_building_id['obr/budovy/razirna'] = "c"; // hack for sgwg.net Kruona
 
-        this.change_from = [ ];
+        this.change_from = { };
         this.change_from['2'] = [ '3', 'c' ]; // TRI/min -> NAQ
         this.change_from['3'] = [ '2', 'c' ]; // NAQ/min -> TRI
         this.change_from['5'] = [ '2', '3', '6', '7' ]; // NAQ/TRI/min/lod -> kas
@@ -62,7 +66,7 @@
 
         this.batch_sizes = [1,2,5,10];
 
-        this.toolbox_icon_size = '59px';
+        this.toolbox_icon_size = '53px';
 
         this.xpath = function(query, object, qt) { // Searches object (or document) for string/regex, returning a list of nodes that satisfy the string/regex
             if( !object ) object = document;
@@ -98,14 +102,13 @@
             this.changed_tiles++;
         };
 
-        this.my_build = function(what,fitting,src,count) {
+        this.my_build = function(what,tile,count) {
             var can_build_today = this.can_build_today();
-            var needed_tile = this.building_tile[what];
             var placed = 0;
             for (var t=1;t<=64 && can_build_today > this.changed_tiles;t++) {
                 var type = this.tile_type(t);
-                if ((document.getElementById('hh' +t).value == 0) && (!fitting || (type == needed_tile))) {
-                    this.change_building(t, what, src, false);
+                if ((document.getElementById('hh' +t).value == 0) && (type == tile)) {
+                    this.change_building(t, what, this.building_image[what], false);
                     if (++placed >= count) {
                         return;
                     }
@@ -113,7 +116,7 @@
             }
         };
 
-        this.my_change = function(what,orig,src,count) {
+        this.my_change = function(what,orig,count) {
             var can_build_today = this.can_build_today();
             var needed_tile = this.building_tile[what];
             var placed = 0;
@@ -122,9 +125,8 @@
                 var type = this.tile_type(t);
                 var current_building = document.getElementById('hh' +t).value;
                 var ideal_tile_for_current_building = this.building_tile[current_building];
-                //alert(type+ " " +document.getElementById('hh' +t).value+ " " +orig+ " " +needed_tile);
                 if (current_building == orig && (type == needed_tile) && (type != ideal_tile_for_current_building)) {
-                    this.change_building(t, what, src, true);
+                    this.change_building(t, what, this.building_image[what], true);
                     if (++placed >= count) {
                         return;
                     }
@@ -135,9 +137,8 @@
                 var type = this.tile_type(t);
                 var current_building = document.getElementById('hh' +t).value;
                 var ideal_tile_for_current_building = this.building_tile[current_building];
-                //alert(type+ " " +document.getElementById('hh' +t).value+ " " +orig+ " " +needed_tile);
                 if (current_building == orig && (type == needed_tile) && (type == ideal_tile_for_current_building)) {
-                    this.change_building(t, what, src, true);
+                    this.change_building(t, what, this.building_image[what], true);
                     if (++placed >= count) {
                         return;
                     }
@@ -149,7 +150,7 @@
                 var current_building = document.getElementById('hh' +t).value;
                 var ideal_tile_for_current_building = this.building_tile[current_building];
                 if (current_building == orig && (type != needed_tile) && (type != ideal_tile_for_current_building)) {
-                    this.change_building(t, what, src, true);
+                    this.change_building(t, what, this.building_image[what], true);
                     if (++placed >= count) {
                         return;
                     }
@@ -161,7 +162,7 @@
                 var current_building = document.getElementById('hh' +t).value;
                 var ideal_tile_for_current_building = this.building_tile[current_building];
                 if (current_building == orig && (type != needed_tile) && (type == ideal_tile_for_current_building)) {
-                    this.change_building(t, what, src, true);
+                    this.change_building(t, what, this.building_image[what], true);
                     if (++placed >= count) {
                         return;
                     }
@@ -169,7 +170,6 @@
             }
         };
     }
-    let tools = new my_tools();
 
     var D                                   = document;
     var scriptNode                          = D.createElement ('script');
@@ -305,10 +305,11 @@
 
 
         // build tollbox
-        var toolbox = document.createElement("div");
+        this.toolbox = document.createElement("div");
         toolbox.setAttribute("id", "toolbox");
-        toolbox.setAttribute("style","position: absolute; width: 600px; top: " +(rect.top+4)+ "px; left: " +(rect.left+715)+ "px; z-index: 99");
+        toolbox.setAttribute("style","position: absolute; width: " +(parseInt(tools.toolbox_icon_size)*12)+ "px; top: " +(rect.top+32)+ "px; left: " +(rect.left+670)+ "px; z-index: 99");
 
+        // populate the tools.building_image array
         var buildings = tools.xpath('//*[@id="seznam_budov"]/table/tbody/tr/td[1]/img');
         for(var i = 0; i < buildings.snapshotLength; ++i) {
             var src = buildings.snapshotItem(i).getAttribute('src');
@@ -318,49 +319,62 @@
             var building_id = src.slice(underscore_pos+1,dot_pos);
             var building_code = tools.picture_to_building_id[building_id];
 
+            tools.building_image[building_code] = src;
+        }
+
+        this.toolbox_heading = document.createElement("div");
+        $.each(tools.tile_name, function(tile,name) {
+            this.toolbox_heading.innerHTML += '<div style="width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-color: rgba(0,0,0,0.5); line-height: ' +tools.toolbox_icon_size+ '; text-align: center; vertical-align: middle; overflow: hidden; text-overflow: ellipsis;">' +name+ '</div>';
+        }.bind(this));
+        $.each(tools.building_image,  function(building_code,img) {
+            this.toolbox_heading.innerHTML += '<div style="width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +img+ '\'); background-position: center;"></div>';
+        }.bind(this));
+        var cleaner = document.createElement("hr");
+        cleaner.setAttribute("style","clear: both; display: block; visibility: hidden; height: 0; border: none;");
+        this.toolbox_heading.appendChild(cleaner);
+        this.toolbox.appendChild(this.toolbox_heading);
+
+        $.each(tools.building_tile, function(building_code, preferred_tile) {
             var div = document.createElement("div");
             var inner_style = "width: 50%; height: 50%; float: left; color: black; line-height: " +Math.round(parseInt(tools.toolbox_icon_size)/2)+ "px; text-align: center; vertical-align: middle; font-weight: bolder; -webkit-text-stroke: 1.3px #bbb;";
 
-            var div_fitting = document.createElement("div");
-            div_fitting.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +src+ '\'); background-position: center;';
-            var div_innerHTML = '';
-            for (var d=0;d<tools.batch_sizes.length;d++) {
-                div_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_build(\'' +building_code+ '\',true,\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
-            }
-            div_fitting.innerHTML = div_innerHTML;
-
-            var div_any = document.createElement("div");
-            div_any.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +src+ '\'); background-position: center;';
-            var div_any_innerHTML = '';
-            for (d=0;d<tools.batch_sizes.length;d++) {
-                div_any_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_build(\'' +building_code+ '\',false,\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
-            }
-            div_any.innerHTML = div_any_innerHTML;
-
-            var div_change = [ ];
-            var change_from_building_code = tools.change_from[building_code];
-            if (change_from_building_code != undefined) {
-                for (var c=0; c<change_from_building_code.length; c++) {
-                    var next_div_change = document.createElement("div");
-                    next_div_change.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +src+ '\'); background-position: center;';
-                    var div_change_innerHTML = '';
-                    for (var d=0;d<tools.batch_sizes.length;d++) {
-                        div_change_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_change(\'' +building_code+ '\',\'' +change_from_building_code[c]+ '\',\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
-                    }
-                    next_div_change.innerHTML = div_change_innerHTML;
-                    div_change.push(next_div_change);
+            $.each(tools.tile_name, function(parent, building_code, preferred_tile, tile, name) {
+                var src = tools.building_image[building_code];
+                var div = document.createElement("div");
+                div.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +src+ '\'); background-position: center;';
+                var div_innerHTML = '';
+                var style_fit = 'background-color: rgba(255,255,255,0.5);';
+                if (preferred_tile != tile) {
+                    style_fit = 'background-color: rgba(0,0,0,0.5);';
                 }
-            }
-            div.appendChild(div_fitting);
-            div.appendChild(div_any);
-            for (var dc = 0; dc<div_change.length; dc++) {
-                div.appendChild(div_change[dc]);
-            }
+                for (var d=0;d<tools.batch_sizes.length;d++) {
+                    div_innerHTML += '<div style="' +inner_style + style_fit+ '" onclick="tools.my_build(\'' +building_code+ '\',\'' +tile+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
+                }
+                div.innerHTML = div_innerHTML;
+                parent.appendChild(div);
+            }.bind(this, div, building_code, preferred_tile));
+
+            $.each(tools.building_image, function(parent, building_code, preferred_tile, building_from, orig_src) {
+                var src = tools.building_image[building_code];
+                var div = document.createElement("div");
+                if (building_code != building_from) {
+                    div.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +src+ '\'); background-position: center;';
+                    var div_innerHTML = '';
+                    for (var d=0;d<tools.batch_sizes.length;d++) {
+                        div_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_change(\'' +building_code+ '\',\'' +building_from+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
+                    }
+                    div.innerHTML = div_innerHTML;
+                } else {
+                    div.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left;';
+                }
+                parent.appendChild(div);
+            }.bind(this, div, building_code, preferred_tile));
+
             var cleaner = document.createElement("hr");
             cleaner.setAttribute("style","clear: both; display: block; visibility: hidden; height: 0; border: none;");
             div.appendChild(cleaner);
-            toolbox.appendChild(div);
-        }
+            this.toolbox.appendChild(div);
+        }.bind(this));
         all.parentNode.insertBefore(toolbox, all);
     }, false);
 })();
