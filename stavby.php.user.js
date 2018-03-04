@@ -78,6 +78,11 @@
             return type;
         };
 
+        this.can_build_today = function() {
+            var can_build_today_elem = this.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[4]',null,true);
+            return parseInt(can_build_today_elem.innerHTML);
+        };
+
         this.change_building = function(tile, what, img_src, is_change) {
             var color = "yellow";
             if (is_change) {
@@ -92,8 +97,7 @@
         };
 
         this.my_build = function(what,fitting,src,count) {
-            var can_build_today_elem = this.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[4]',null,true);
-            var can_build_today = parseInt(can_build_today_elem.innerHTML);
+            var can_build_today = this.can_build_today();
             var needed_tile = this.building_tile[what];
             var placed = 0;
             for (var t=1;t<=64 && can_build_today > this.changed_tiles;t++) {
@@ -108,9 +112,7 @@
         };
 
         this.my_change = function(what,orig,src,count) {
-            //alert("Build: " +what+ ", " +orig+ ", " +src+ ", " +count);
-            var can_build_today_elem = this.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[4]',null,true);
-            var can_build_today = parseInt(can_build_today_elem.innerHTML);
+            var can_build_today = this.can_build_today();
             var needed_tile = this.building_tile[what];
             var placed = 0;
             // first try to place on suitable tiles replacing buildings on their non-suitable tiles
