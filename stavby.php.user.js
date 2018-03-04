@@ -320,19 +320,19 @@
             var inner_style = "width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle; font-weight: bolder; -webkit-text-stroke: 1.3px #bbb;";
 
             var div_fitting = document.createElement("div");
-            var div_innerHTML = '<div style="width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');">';
+            div_fitting.style = 'width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');';
+            var div_innerHTML = '';
             for (var d=0;d<tools.batch_sizes.length;d++) {
                 div_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_build(\'' +building_code+ '\',true,\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
             }
-            div_innerHTML += '</div>';
             div_fitting.innerHTML = div_innerHTML;
 
             var div_any = document.createElement("div");
-            var div_any_innerHTML = '<div style="width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');">';
+            div_any.style = 'width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');';
+            var div_any_innerHTML = '';
             for (d=0;d<tools.batch_sizes.length;d++) {
                 div_any_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_build(\'' +building_code+ '\',false,\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
             }
-            div_any_innerHTML += '</div>';
             div_any.innerHTML = div_any_innerHTML;
 
             var div_change = [ ];
@@ -340,11 +340,11 @@
             if (change_from_building_code != undefined) {
                 for (var c=0; c<change_from_building_code.length; c++) {
                     var next_div_change = document.createElement("div");
-                    var div_change_innerHTML = '<div style="width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');">';
+                    next_div_change.style = 'width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');';
+                    var div_change_innerHTML = '';
                     for (var d=0;d<tools.batch_sizes.length;d++) {
                         div_change_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_change(\'' +building_code+ '\',\'' +change_from_building_code[c]+ '\',\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
                     }
-                    div_change_innerHTML += '</div>';
                     next_div_change.innerHTML = div_change_innerHTML;
                     div_change.push(next_div_change);
                 }
