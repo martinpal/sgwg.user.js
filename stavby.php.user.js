@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.15
+// @version      0.16
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -189,6 +189,9 @@
             var item = planets_can_build.snapshotItem(p);
             var can_build = parseInt(item.innerHTML);
             var free_slots = parseInt(item.previousElementSibling.innerHTML);
+            if (isNaN(free_slots)) {
+                break;
+            }
             var parent = item.parentElement;
             item.previousElementSibling.innerHTML = free_slots; // remove the useless (64)
             if (free_slots == 0) {
