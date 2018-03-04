@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.16
+// @version      0.17
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -61,6 +61,8 @@
         this.change_from['7'] = [ '2', '3', '5', '6' ]; // NAQ/TRI/kas/min -> lod
 
         this.batch_sizes = [1,2,5,10];
+
+        this.toolbox_icon_size = '59px';
 
         this.xpath = function(query, object, qt) { // Searches object (or document) for string/regex, returning a list of nodes that satisfy the string/regex
             if( !object ) object = document;
@@ -317,10 +319,10 @@
             var building_code = tools.picture_to_building_id[building_id];
 
             var div = document.createElement("div");
-            var inner_style = "width: 50%; height: 50%; float: left; color: black; line-height: 37px; text-align: center; vertical-align: middle; font-weight: bolder; -webkit-text-stroke: 1.3px #bbb;";
+            var inner_style = "width: 50%; height: 50%; float: left; color: black; line-height: " +Math.round(parseInt(tools.toolbox_icon_size)/2)+ "px; text-align: center; vertical-align: middle; font-weight: bolder; -webkit-text-stroke: 1.3px #bbb;";
 
             var div_fitting = document.createElement("div");
-            div_fitting.style = 'width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');';
+            div_fitting.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +src+ '\'); background-position: center;';
             var div_innerHTML = '';
             for (var d=0;d<tools.batch_sizes.length;d++) {
                 div_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_build(\'' +building_code+ '\',true,\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
@@ -328,7 +330,7 @@
             div_fitting.innerHTML = div_innerHTML;
 
             var div_any = document.createElement("div");
-            div_any.style = 'width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');';
+            div_any.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +src+ '\'); background-position: center;';
             var div_any_innerHTML = '';
             for (d=0;d<tools.batch_sizes.length;d++) {
                 div_any_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_build(\'' +building_code+ '\',false,\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
@@ -340,7 +342,7 @@
             if (change_from_building_code != undefined) {
                 for (var c=0; c<change_from_building_code.length; c++) {
                     var next_div_change = document.createElement("div");
-                    next_div_change.style = 'width: 75px; height: 75px; float: left; background-image: url(\'' +src+ '\');';
+                    next_div_change.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +src+ '\'); background-position: center;';
                     var div_change_innerHTML = '';
                     for (var d=0;d<tools.batch_sizes.length;d++) {
                         div_change_innerHTML += '<div style="' +inner_style+ '" onclick="tools.my_change(\'' +building_code+ '\',\'' +change_from_building_code[c]+ '\',\'' +src+ '\',' +tools.batch_sizes[d]+ ');">' +tools.batch_sizes[d]+ '</div>';
@@ -355,7 +357,7 @@
                 div.appendChild(div_change[dc]);
             }
             var cleaner = document.createElement("hr");
-            cleaner.setAttribute("style","clear: both; display: block; visibility: hidden;");
+            cleaner.setAttribute("style","clear: both; display: block; visibility: hidden; height: 0; border: none;");
             div.appendChild(cleaner);
             toolbox.appendChild(div);
         }
