@@ -2,7 +2,7 @@
 // @name         mapa_zobraz_sektor.php
 // @namespace    http://stargate-dm.cz/
 // @version      0.1
-// @description  Utils for stavby.php
+// @description  Utils for mapa_zobraz_sektor.php
 // @author       on/off
 // @match        http://stargate-dm.cz/mapa_zobraz_sektor.php*
 // @match        http://sgwg.net/mapa_zobraz_sektor.php*
