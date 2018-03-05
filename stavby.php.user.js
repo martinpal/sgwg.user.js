@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.19
+// @version      0.20
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -105,7 +105,7 @@
         this.my_build = function(what,tile,count) {
             var can_build_today = this.can_build_today();
             var placed = 0;
-            for (var t=1;t<=64 && can_build_today > this.changed_tiles;t++) {
+            for (var t=64;t>=1 && can_build_today > this.changed_tiles;t--) {
                 var type = this.tile_type(t);
                 if ((document.getElementById('hh' +t).value == 0) && (type == tile)) {
                     this.change_building(t, what, this.building_image[what], false);
