@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.18
+// @version      0.19
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -182,6 +182,11 @@
         var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
         targ.appendChild (scriptNode);
 
+        // Logo of our race
+        var my_race_url = tools.xpath('//*[@id="info"]/ul[1]/li[2]/span/a', null, true).href;
+        var my_race = my_race_url.slice(my_race_url.lastIndexOf('=')+1);
+        var my_race_logo = '/obr/logaras/' +my_race+ '.jpg';
+
         // planet table readability
         var planets_can_build = tools.xpath('//*[@id="content-in"]/center/form[1]/table[1]/tbody/tr/td[5]'); // fifth column on sgwg.net
         if (planets_can_build.snapshotLength == 0) {
@@ -307,7 +312,7 @@
         // build tollbox
         this.toolbox = document.createElement("div");
         toolbox.setAttribute("id", "toolbox");
-        toolbox.setAttribute("style","position: absolute; width: " +(parseInt(tools.toolbox_icon_size)*12)+ "px; top: " +(rect.top+32)+ "px; left: " +(rect.left+670)+ "px; z-index: 99");
+        toolbox.setAttribute("style","position: absolute; width: " +(parseInt(tools.toolbox_icon_size)*12+1)+ "px; top: " +(rect.top+32)+ "px; left: " +(rect.left+670)+ "px; z-index: 99");
 
         // populate the tools.building_image array
         var buildings = tools.xpath('//*[@id="seznam_budov"]/table/tbody/tr/td[1]/img');
@@ -326,11 +331,12 @@
         $.each(tools.tile_name, function(tile,name) {
             this.toolbox_heading.innerHTML += '<div style="width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-color: rgba(0,0,0,0.5); line-height: ' +tools.toolbox_icon_size+ '; text-align: center; vertical-align: middle; overflow: hidden; text-overflow: ellipsis;">' +name+ '</div>';
         }.bind(this));
+        this.toolbox_heading.innerHTML += '<div style="width: 1px; height: ' +tools.toolbox_icon_size+ '; float: left; background-color: #fff;"></div>'; // separator
         $.each(tools.building_image,  function(building_code,img) {
             this.toolbox_heading.innerHTML += '<div style="width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +img+ '\'); background-position: center;"></div>';
         }.bind(this));
-        var cleaner = document.createElement("hr");
-        cleaner.setAttribute("style","clear: both; display: block; visibility: hidden; height: 0; border: none;");
+        var cleaner = document.createElement("div");
+        cleaner.setAttribute("style","clear: both; height: 1px; background-color: #fff;");
         this.toolbox_heading.appendChild(cleaner);
         this.toolbox.appendChild(this.toolbox_heading);
 
@@ -354,6 +360,10 @@
                 parent.appendChild(div);
             }.bind(this, div, building_code, preferred_tile));
 
+            var separator = document.createElement("div");
+            separator.style = 'width: 1px; height: ' +tools.toolbox_icon_size+ '; float: left; background-color: #fff;';
+            div.appendChild(separator);
+
             $.each(tools.building_image, function(parent, building_code, preferred_tile, building_from, orig_src) {
                 var src = tools.building_image[building_code];
                 var div = document.createElement("div");
@@ -365,7 +375,7 @@
                     }
                     div.innerHTML = div_innerHTML;
                 } else {
-                    div.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left;';
+                    div.style = 'width: ' +tools.toolbox_icon_size+ '; height: ' +tools.toolbox_icon_size+ '; float: left; background-image: url(\'' +my_race_logo+ '\'); background-size: ' +tools.toolbox_icon_size+ ';';
                 }
                 parent.appendChild(div);
             }.bind(this, div, building_code, preferred_tile));
