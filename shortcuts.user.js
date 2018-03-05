@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.4
+// @version      0.5
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
 // @match        http://sgwg.net/*
+// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // @grant        none
 // @license      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // ==/UserScript==
@@ -52,7 +53,30 @@
                 '<a href="/forum.php?kde=16"><span style="color:red"      >AF</span></a>&nbsp;' +
                 '<a href="/forum.php?kde=8" ><span style="color:#0ff"     >VIP</span></a>&nbsp;' +
                 '<a href="/forum.php?kde=17" ><span style="color:#01baff" >DSA</span></a>' +
-            '</div>';
+            '</div>' +
+            '<hr style="clear: both; display: block; visibility: hidden; height: 0; border: none;" />';
         head.appendChild(shortcuts);
+
+        var races = document.createElement('div');
+        races.style = "float: right;";
+        head.appendChild(races);
+        $.ajax({
+            async: true,
+            type: 'GET',
+            url: '/vesmir.php?jak=rasy',
+            success: function(parent, data, status) {
+                var jqr = $(jQuery.parseHTML(data));
+                var races = jqr.find('#content-in > center > form:nth-child(19) > select:nth-child(2) > option');
+                $.each(races, function(head, k, v) {
+                    if (isNaN(parseInt(v.value))) {
+                        return;
+                    }
+                    var span = document.createElement('span');
+                    span.innerHTML =  '<a href="/vesmir.php?jak=' +v.value+ '"><img src="/obr/logaras/' +v.value+ '.jpg" alt="' +v.innerHTML+ '" style="width: 56px; height: 56px;" /></a>';
+                    parent.appendChild(span);
+                }.bind(this, parent));
+            }.bind(this, races)
+        });
+
     }, false);
 })();
