@@ -18,7 +18,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
     function my_tools() {
 
-        this.xpath = function(query, object, qt) { // Searches object (or document) for string/regex, returning a list of nodes that satisfy the string/regex
+        this.xpath = function(query, object, qt) {
             if( !object ) object = document;
             var type = qt ? XPathResult.FIRST_ORDERED_NODE_TYPE: XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE;
             var ret = document.evaluate(query, object, null, type, null);
@@ -33,7 +33,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             unoccupied_sectors.setAttribute("style","position: absolute; width: 150px; top: " +(rect.top-4)+ "px; left: " +(rect.left+110)+ "px; z-index: 99; font-size: 75%; text-align: left; background-color: rgba(0,0,0,0.5); padding: 1em; border: 1px solid black;");
             all.parentNode.insertBefore(unoccupied_sectors, all);
             var sectors = this.xpath('//*[@id="map"]/area');
-//            var sectors = this.xpath('//*[@id="map"]/area[1]');
             for (var s = 0; s < sectors.snapshotLength; ++s) {
                 var this_sector = sectors.snapshotItem(s);
                 var href = this_sector.getAttribute('href');
@@ -69,17 +68,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             }
         };
     }
-    let tools = new my_tools();
 
-    var D                                   = document;
-    var scriptNode                          = D.createElement ('script');
-    scriptNode.type                         = "text/javascript";
+    var scriptNode          = document.createElement ('script');
+    scriptNode.type         = "text/javascript";
     scriptNode.textContent  = my_tools.toString() + 'let tools = new my_tools();';
 
     addEventListener ("load", function() {
-        //alert("It's alive");
 
-        var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
+        var targ = document.getElementsByTagName ('head')[0] || document.body || document.documentElement;
         targ.appendChild (scriptNode);
 
         var button = document.createElement('input');
@@ -92,7 +88,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
         var heading = tools.xpath('//*[@id="content-in"]/h1', null, true);
         heading.parentNode.insertBefore(button, heading);
-
 
     }, false);
 })();

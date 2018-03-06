@@ -17,13 +17,12 @@
         $('#css-typing').html(text);
     }
 
-    var D                                   = document;
-    var scriptNode                          = D.createElement ('script');
-    scriptNode.type                         = "text/javascript";
+    var scriptNode          = document.createElement ('script');
+    scriptNode.type         = "text/javascript";
     scriptNode.textContent  = typeWriter.toString();
 
     addEventListener ("load", function() {
-        var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
+        var targ = document.getElementsByTagName ('head')[0] || document.body || document.documentElement;
         targ.appendChild (scriptNode);
     }, false);
 })();

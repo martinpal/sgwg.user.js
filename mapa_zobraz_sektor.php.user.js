@@ -15,7 +15,7 @@
 
     function my_tools() {
 
-        this.xpath = function(query, object, qt) { // Searches object (or document) for string/regex, returning a list of nodes that satisfy the string/regex
+        this.xpath = function(query, object, qt) {
             if( !object ) object = document;
             var type = qt ? XPathResult.FIRST_ORDERED_NODE_TYPE: XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE;
             var ret = document.evaluate(query, object, null, type, null);
@@ -29,17 +29,14 @@
             form.submit();
         };
     }
-    let tools = new my_tools();
 
-    var D                                   = document;
-    var scriptNode                          = D.createElement ('script');
-    scriptNode.type                         = "text/javascript";
+    var scriptNode          = document.createElement ('script');
+    scriptNode.type         = "text/javascript";
     scriptNode.textContent  = my_tools.toString() + 'let tools = new my_tools();';
 
     addEventListener ("load", function() {
-        //alert("It's alive");
 
-        var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
+        var targ = document.getElementsByTagName ('head')[0] || document.body || document.documentElement;
         targ.appendChild (scriptNode);
 
         var sectors = tools.xpath('//*[@id="content-in"]/center/form/table/tbody/tr/td[1]/table/tbody/tr[2]/td/select/option');
@@ -72,8 +69,6 @@
             planet_iterator_div.innerHTML = '<div style="float: right; font-size: 185%;"><a href="#" onclick="tools.change_sector(' +i+ '); return false;">&lt;&lt;</a>&nbsp;<a href="#" onclick="tools.change_sector(' +(i+1)+ ')">' +this_sector+ '</a>&nbsp;<a href="#" onclick="return false;">&gt;&gt;</a></div>';
         }
         heading.parentNode.insertBefore(planet_iterator_div, heading);
-
-
 
     }, false);
 })();

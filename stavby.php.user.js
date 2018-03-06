@@ -70,7 +70,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
         this.toolbox_icon_size = '53px';
 
-        this.xpath = function(query, object, qt) { // Searches object (or document) for string/regex, returning a list of nodes that satisfy the string/regex
+        this.xpath = function(query, object, qt) {
             if( !object ) object = document;
             var type = qt ? XPathResult.FIRST_ORDERED_NODE_TYPE: XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE;
             var ret = document.evaluate(query, object, null, type, null);
@@ -173,15 +173,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         };
     }
 
-    var D                                   = document;
-    var scriptNode                          = D.createElement ('script');
-    scriptNode.type                         = "text/javascript";
+    var scriptNode          = document.createElement ('script');
+    scriptNode.type         = "text/javascript";
     scriptNode.textContent  = my_tools.toString() + 'let tools = new my_tools();';
 
     addEventListener ("load", function() {
-        //alert("It's alive");
 
-        var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
+        var targ = document.getElementsByTagName ('head')[0] || document.body || document.documentElement;
         targ.appendChild (scriptNode);
 
         // Logo of our race

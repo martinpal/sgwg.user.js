@@ -17,7 +17,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
     'use strict';
 
     function my_shortcut_tools() {
-        this.xpath = function(query, object, qt) { // Searches object (or document) for string/regex, returning a list of nodes that satisfy the string/regex
+        this.xpath = function(query, object, qt) {
             if( !object ) object = document;
             var type = qt ? XPathResult.FIRST_ORDERED_NODE_TYPE: XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE;
             var ret = document.evaluate(query, object, null, type, null);
@@ -26,13 +26,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
     }
     let shortcut_tools = new my_shortcut_tools();
 
-    var D                                   = document;
-    var scriptNode                          = D.createElement ('script');
-    scriptNode.type                         = "text/javascript";
+    var scriptNode          = document.createElement ('script');
+    scriptNode.type         = "text/javascript";
     scriptNode.textContent  = my_shortcut_tools.toString() + 'let shortcut_tools = new my_shortcut_tools();';
 
     addEventListener ("load", function() {
-        var targ = D.getElementsByTagName ('head')[0] || D.body || D.documentElement;
+        var targ = document.getElementsByTagName ('head')[0] || document.body || document.documentElement;
         targ.appendChild (scriptNode);
 
         // do nothing if not logged in
@@ -41,7 +40,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             return;
         }
 
-        // top shortcuts for phorums and various stuff
+        // top shortcuts for forums and various stuff
         var head = shortcut_tools.xpath('//*[@id="head"]', null, true);
         var shortcuts = document.createElement('div');
         shortcuts.innerHTML =
@@ -59,6 +58,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             '<hr style="clear: both; display: block; visibility: hidden; height: 0; border: none;" />';
         head.appendChild(shortcuts);
 
+        // top shortcuts for listings of races sorted by planets
         var races = document.createElement('div');
         races.style = "float: right;";
         head.appendChild(races);
