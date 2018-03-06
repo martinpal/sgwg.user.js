@@ -1,15 +1,17 @@
 // ==UserScript==
 // @name         mapa_zobraz_galaxy.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.2
+// @version      0.3
 // @description  Utils for mapa_zobraz_galaxy.php
 // @author       on/off
 // @match        http://stargate-dm.cz/mapa_zobraz_galaxy.php*
 // @match        http://sgwg.net/mapa_zobraz_galaxy.php*
-// @require      http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js
+// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // @grant        none
 // @license      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // ==/UserScript==
+
+this.$ = this.jQuery = jQuery.noConflict(true);
 
 (function() {
     'use strict';
