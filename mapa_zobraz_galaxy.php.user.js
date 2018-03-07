@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mapa_zobraz_galaxy.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.3
+// @version      0.4
 // @description  Utils for mapa_zobraz_galaxy.php
 // @author       on/off
 // @match        http://stargate-dm.cz/mapa_zobraz_galaxy.php*
@@ -11,7 +11,7 @@
 // @license      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // ==/UserScript==
 
-this.$ = this.jQuery = jQuery.noConflict(true);
+// this.$ = this.jQuery = jQuery.noConflict(true);
 
 (function() {
     'use strict';
@@ -67,6 +67,40 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                 });
             }
         };
+
+
+        this.colony_table_update = function() {
+            var all = tools.xpath('//*[@id="all"]',null,true);
+            var rect = document.getElementById('report_button').getBoundingClientRect();
+            var free_colonies = document.createElement("div");
+            free_colonies.setAttribute("id", "free_colonies");
+            free_colonies.setAttribute("style","position: absolute; width: 150px; top: " +(rect.top-4)+ "px; left: " +(rect.left+110)+ "px; z-index: 99; font-size: 75%; text-align: left; background-color: rgba(0,0,0,0.5); padding: 1em; border: 1px solid black;");
+            all.parentNode.insertBefore(free_colonies, all);
+            var sectors = this.xpath('//*[@id="map"]/area');
+            var found = false;
+            for (var s = 0; s < sectors.snapshotLength && !found; ++s) {
+                var this_sector = sectors.snapshotItem(s);
+                var href = this_sector.getAttribute('href');
+                var title = this_sector.getAttribute('title');
+                $.ajax({
+                    async:    false,
+                    type:     'GET',
+                    url:      href,
+                    success:  function(data, status) {
+                        var jqr = $(jQuery.parseHTML(data));
+                        var colonies = jqr.find('#kolonie > tbody > tr > td > a');
+                        $.each(colonies, function(free_colonies, k, v) {
+                            var this_colony = v.parentNode;
+                            if (-1 != this_colony.innerHTML.indexOf('Majitel: neobsazeno') && -1 != this_colony.innerHTML.indexOf('Velikost: velká')) {
+                                var this_link = v.getAttribute('href');
+                                free_colonies.innerHTML += '<div><a href="' +this_link+ '">Kolonie</a></div>';
+                                found = true;
+                            }
+                        }.bind(this, free_colonies));
+                    }
+                });
+            }
+        };
     }
 
     var scriptNode          = document.createElement ('script');
@@ -78,15 +112,24 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         var targ = document.getElementsByTagName ('head')[0] || document.body || document.documentElement;
         targ.appendChild (scriptNode);
 
+        var heading = tools.xpath('//*[@id="content-in"]/h1', null, true);
+
         var button = document.createElement('input');
         button.setAttribute('type', 'submit');
         button.setAttribute('class', 'submit');
-        button.setAttribute('value', 'Report');
+        button.setAttribute('value', 'Volné planety');
         button.setAttribute('style', 'float: right;');
         button.setAttribute('id', 'report_button');
         button.setAttribute('onclick', 'tools.sector_table_update()');
+        heading.parentNode.insertBefore(button, heading);
 
-        var heading = tools.xpath('//*[@id="content-in"]/h1', null, true);
+        var button = document.createElement('input');
+        button.setAttribute('type', 'submit');
+        button.setAttribute('class', 'submit');
+        button.setAttribute('value', 'Volné kolonie');
+        button.setAttribute('style', 'float: right;');
+        button.setAttribute('id', 'report_button');
+        button.setAttribute('onclick', 'tools.colony_table_update()');
         heading.parentNode.insertBefore(button, heading);
 
     }, false);
