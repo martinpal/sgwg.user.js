@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         planety.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.2
+// @version      0.3
 // @description  Utils for planety.php
 // @author       on/off
 // @match        http://stargate-dm.cz/planety.php*
@@ -39,6 +39,35 @@
                     this_planet.parentNode.insertBefore(build_link, this_planet.nextSibling);
                 }
             }
+            var cells = tools.xpath('//*[@id="statistika_ajax"]/table/tbody/tr/td');
+            for (var c = 0; c < cells.snapshotLength; ++c) {
+                var this_cell = cells.snapshotItem(c);
+                if (this_cell.innerHTML == "0" || this_cell.innerHTML == "0,0" || this_cell.innerHTML == "0,00") {
+                    this_cell.style = 'color: #777;';
+                }
+            }
+            var h6 = tools.xpath('//*[@id="statistika_ajax"]/table/tbody/tr[1]/th[6]/a', null, true);
+            var h5 = tools.xpath('//*[@id="statistika_ajax"]/table/tbody/tr[1]/th[5]/a', null, true);
+            var col = 0;
+            if (h6 != null && h6.innerHTML == 'Spok.') {
+                col = 6;
+            } else if (h5 != null && h5.innerHTML == 'Spok.') {
+                col = 5;
+            }
+            if (col != 0) {
+                var  satisfaction = tools.xpath('//*[@id="statistika_ajax"]/table/tbody/tr/td[' +col+ ']');
+                for (var s = 0; s < satisfaction.snapshotLength; ++s) {
+                    var this_sat = satisfaction.snapshotItem(s);
+                    if (parseInt(this_sat.innerHTML) == "100") {
+                        this_sat.style = 'color: #0f0;';
+                    } else if (parseInt(this_sat.innerHTML) >=90) {
+                        this_sat.style = 'color: yellow;';
+                    } else {
+                        this_sat.style = 'color: #f77;';
+                    }
+                }
+            }
+
             window.setTimeout(tools.planet_table_update, 40);
         };
     }
