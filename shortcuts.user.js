@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.7
+// @version      0.8
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -23,8 +23,18 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             var ret = document.evaluate(query, object, null, type, null);
             return (qt ? ret.singleNodeValue : ret);
         };
+
+        this.get_policy = function(doc, selector) {
+            var policy = doc.find(selector);
+            var return_value;
+            $.each(policy, function(k, v) {
+                if (v.checked) {
+                    return_value = v.parentNode.nextElementSibling.innerHTML;
+                }
+            });
+            return return_value;
+        };
     }
-    let shortcut_tools = new my_shortcut_tools();
 
     var scriptNode          = document.createElement ('script');
     scriptNode.type         = "text/javascript";
@@ -61,6 +71,36 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             '<hr style="clear: both; display: block; visibility: hidden; height: 0; border: none;" />';
         head.appendChild(shortcuts);
 
+        // top overview of policies
+        var policies = shortcut_tools.xpath('//*[@id="info"]/ul[2]', null, true);
+        $.ajax({
+            async: true,
+            type: 'GET',
+            url: '/politika.php',
+            success: function(parent, data, status) {
+                var jqr = $(jQuery.parseHTML(data));
+                var selectors = [
+                    '#content-in > form:nth-child(6)  > table > tbody > tr > td:nth-child(1) > input[type="radio"]',
+                    '#content-in > form:nth-child(7)  > table > tbody > tr > td:nth-child(1) > input[type="radio"]',
+                    '#content-in > form:nth-child(8)  > table > tbody > tr > td:nth-child(1) > input[type="radio"]',
+                    '#content-in >                      table > tbody > tr > td:nth-child(1) > input[type="radio"]',
+                    '#content-in > form:nth-child(11) > table > tbody > tr > td:nth-child(1) > input[type="radio"]'
+                    ];
+                var names = [
+                    'Zaměření',
+                    'Státní zřízení',
+                    'Armáda',
+                    'Soustava',
+                    'Politika vůdce',
+                    ];
+                for (var p = 0; p < selectors.length; ++p) {
+                    var li = document.createElement('li');
+                    li.innerHTML = '<strong>' +names[p]+ ':</strong> ' +shortcut_tools.get_policy(jqr, selectors[p]);
+                    parent.appendChild(li);
+                }
+            }.bind(this, policies)
+        });
+
         // top shortcuts for listings of races sorted by planets
         var races = document.createElement('div');
         races.style = "float: right;";
@@ -72,7 +112,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             success: function(parent, data, status) {
                 var jqr = $(jQuery.parseHTML(data));
                 var races = jqr.find('#content-in > center > form:nth-child(19) > select:nth-child(2) > option');
-                $.each(races, function(head, k, v) {
+                $.each(races, function(parent, k, v) {
                     if (isNaN(parseInt(v.value))) {
                         return;
                     }
