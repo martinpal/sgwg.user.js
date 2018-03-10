@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.9
+// @version      0.10
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -132,5 +132,28 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             }.bind(this, races)
         });
 
+        // following is only for stargate-dm.cz
+        if(window.location.href.indexOf("http://stargate-dm.cz/") != 0) {
+            return;
+        };
+
+        var flagships =  shortcut_tools.xpath('//*[@id="info"]/ul[2]', null, true);
+        $.ajax({
+            async: true,
+            type: 'GET',
+            url: '/vlajkova.php',
+            success: function(parent, data, status) {
+                var jqr = $(jQuery.parseHTML(data));
+                var flagship_statuses = jqr.find('#content-in > table > tbody > tr > td:nth-child(2) > span:nth-child(14)');
+                $.each(flagship_statuses, function(parent, k, v) {
+                    if (v.innerHTML == 'připravená') {
+                        var flagship_class = v.parentNode.previousElementSibling.firstElementChild.nextSibling.nodeValue.slice(2);
+                        var li = document.createElement('li');
+                        li.innerHTML = '<strong>Na orbitě:</strong> ' +flagship_class;
+                        parent.appendChild(li);
+                    };
+                }.bind(this, parent));
+            }.bind(this, flagships)
+        });
     }, false);
 })();
