@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.8
+// @version      0.9
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -86,6 +86,15 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                     '#content-in >                      table > tbody > tr > td:nth-child(1) > input[type="radio"]',
                     '#content-in > form:nth-child(11) > table > tbody > tr > td:nth-child(1) > input[type="radio"]'
                     ];
+                if(window.location.href.indexOf("http://stargate-dm.cz/") == 0) {
+                    selectors = [
+                        '#content-in > form:nth-child(5)  > table > tbody > tr > td:nth-child(1) > input[type="radio"]',
+                        '#content-in > form:nth-child(6)  > table > tbody > tr > td:nth-child(1) > input[type="radio"]',
+                        '#content-in > form:nth-child(7)  > table > tbody > tr > td:nth-child(1) > input[type="radio"]',
+                        '#content-in > form:nth-child(8)  > table > tbody > tr > td:nth-child(1) > input[type="radio"]',
+                        '#content-in > form:nth-child(9)  > table > tbody > tr > td:nth-child(1) > input[type="radio"]'
+                        ];
+                }
                 var names = [
                     'Zaměření',
                     'Státní zřízení',
