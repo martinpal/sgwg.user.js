@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.6
+// @version      0.7
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -39,6 +39,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         if (user_img == null) {
             return;
         }
+
+        var logo = shortcut_tools.xpath('//*[@id="logo"]/a/span', null, true);
+        logo.parentNode.href = '/hlavni.php';
 
         // top shortcuts for forums and various stuff
         var head = shortcut_tools.xpath('//*[@id="head"]', null, true);
