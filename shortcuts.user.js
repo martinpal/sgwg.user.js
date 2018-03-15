@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.11
+// @version      0.13
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -230,6 +230,33 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                     }.bind(this, parent));
                     set_cached_value('hero_missions', JSON.stringify(hero_missions_cache));
                 }.bind(this, hero_missions)
+            });
+        }
+
+        var flagship_missions =  shortcut_tools.xpath('//*[@id="info"]/ul[2]', null, true);
+        cached_value = get_cached_value('flagship_missions');
+        if (cached_value != undefined) {
+            console.log('Cached');
+            flagship_missions.innerHTML += cached_value;
+        } else {
+            console.log('Reload');
+            var flagship_missions_cache = { millis: now, HTML: '' };
+            $.ajax({
+                async: true,
+                type: 'GET',
+                url: '/vlajkova.php',
+                success: function(parent, data, status) {
+                    var jqr = $(jQuery.parseHTML(data));
+                    var flagship_mission_eta = jqr.find('#content-in > center:nth-child(11) > table > tbody > tr > td:nth-child(5)');
+                    $.each(flagship_mission_eta, function(parent, k, v) {
+                        var flagship_mission_type = v.parentNode.firstElementChild.innerHTML.trim();
+                        var li = document.createElement('li');
+                        li.innerHTML = '<strong>Loď na misi:</strong> ' +flagship_mission_type+ ' do ' +v.innerHTML.trim();
+                        parent.appendChild(li);
+                        flagship_missions_cache.HTML += li.outerHTML;
+                    }.bind(this, parent));
+                    set_cached_value('flagship_missions', JSON.stringify(flagship_missions_cache));
+                }.bind(this, flagship_missions)
             });
         }
     }, false);
