@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.13
+// @version      0.14
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -258,6 +258,15 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                     set_cached_value('flagship_missions', JSON.stringify(flagship_missions_cache));
                 }.bind(this, flagship_missions)
             });
+        }
+
+        var recount = shortcut_tools.xpath('//*[@id="info"]/ul[2]/li[7]/a', null, true);
+        if (recount != undefined) {
+            recount = recount.parentNode;
+            recount.parentNode.removeChild(recount);
+            flagship_missions.appendChild(recount);
+            var recount_span = recount.firstElementChild.nextElementSibling;
+            recount_span.onclick = function () { if (window.confirm('Opravdu?')) { window.location = '/hlavni.php?prep=1'; } };
         }
     }, false);
 })();
