@@ -205,5 +205,32 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                 }.bind(this, flagships)
             });
         }
+
+        var hero_missions =  shortcut_tools.xpath('//*[@id="info"]/ul[2]', null, true);
+        cached_value = get_cached_value('hero_missions');
+        if (cached_value != undefined) {
+            console.log('Cached');
+            hero_missions.innerHTML += cached_value;
+        } else {
+            console.log('Reload');
+            var hero_missions_cache = { millis: now, HTML: '' };
+            $.ajax({
+                async: true,
+                type: 'GET',
+                url: '/heroes.php',
+                success: function(parent, data, status) {
+                    var jqr = $(jQuery.parseHTML(data));
+                    var hero_mission_eta = jqr.find('#content-in > center > table > tbody > tr > td:nth-child(6)');
+                    $.each(hero_mission_eta, function(parent, k, v) {
+                        var hero_mission_type = v.parentNode.firstElementChild.innerHTML.trim();
+                        var li = document.createElement('li');
+                        li.innerHTML = '<strong>Hrdina na misi:</strong> ' +hero_mission_type+ ' do ' +v.innerHTML.trim();
+                        parent.appendChild(li);
+                        hero_missions_cache.HTML += li.outerHTML;
+                    }.bind(this, parent));
+                    set_cached_value('hero_missions', JSON.stringify(hero_missions_cache));
+                }.bind(this, hero_missions)
+            });
+        }
     }, false);
 })();
