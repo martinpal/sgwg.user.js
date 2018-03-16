@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.14
+// @version      0.15
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -70,6 +70,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             return;
         }
 
+        var requests = [ ];
+
         var logo = shortcut_tools.xpath('//*[@id="logo"]/a/span', null, true);
         logo.parentNode.href = '/hlavni.php';
 
@@ -100,7 +102,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         } else {
             console.log('Reload');
             var policy_cache = { millis: now, HTML: '' };
-            $.ajax({
+            requests.push($.ajax({
                 async: true,
                 type: 'GET',
                 url: '/politika.php',
@@ -137,7 +139,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                     }
                     set_cached_value('policies', JSON.stringify(policy_cache));
                 }.bind(this, policies)
-            });
+            }));
         }
 
         // top shortcuts for listings of races sorted by planets
@@ -151,7 +153,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         } else {
             console.log('Reload');
             var race_cache = { millis: now, HTML: '' };
-            $.ajax({
+            requests.push($.ajax({
                 async: true,
                 type: 'GET',
                 url: '/vesmir.php?jak=rasy',
@@ -169,7 +171,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                     race_cache.HTML = parent.innerHTML;
                     set_cached_value('races', JSON.stringify(race_cache));
                 }.bind(this, races)
-            });
+            }));
         }
 
         // following is only for stargate-dm.cz
@@ -185,7 +187,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         } else {
             console.log('Reload');
             var flagship_cache = { millis: now, HTML: '' };
-            $.ajax({
+            requests.push($.ajax({
                 async: true,
                 type: 'GET',
                 url: '/vlajkova.php',
@@ -203,7 +205,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                     }.bind(this, parent));
                     set_cached_value('flagships', JSON.stringify(flagship_cache));
                 }.bind(this, flagships)
-            });
+            }));
         }
 
         var hero_missions =  shortcut_tools.xpath('//*[@id="info"]/ul[2]', null, true);
@@ -214,7 +216,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         } else {
             console.log('Reload');
             var hero_missions_cache = { millis: now, HTML: '' };
-            $.ajax({
+            requests.push($.ajax({
                 async: true,
                 type: 'GET',
                 url: '/heroes.php',
@@ -230,7 +232,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                     }.bind(this, parent));
                     set_cached_value('hero_missions', JSON.stringify(hero_missions_cache));
                 }.bind(this, hero_missions)
-            });
+            }));
         }
 
         var flagship_missions =  shortcut_tools.xpath('//*[@id="info"]/ul[2]', null, true);
@@ -241,7 +243,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         } else {
             console.log('Reload');
             var flagship_missions_cache = { millis: now, HTML: '' };
-            $.ajax({
+            requests.push($.ajax({
                 async: true,
                 type: 'GET',
                 url: '/vlajkova.php',
@@ -257,16 +259,18 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                     }.bind(this, parent));
                     set_cached_value('flagship_missions', JSON.stringify(flagship_missions_cache));
                 }.bind(this, flagship_missions)
-            });
+            }));
         }
 
-        var recount = shortcut_tools.xpath('//*[@id="info"]/ul[2]/li[7]/a', null, true);
-        if (recount != undefined) {
-            recount = recount.parentNode;
-            recount.parentNode.removeChild(recount);
-            flagship_missions.appendChild(recount);
-            var recount_span = recount.firstElementChild.nextElementSibling;
-            recount_span.onclick = function () { if (window.confirm('Opravdu?')) { window.location = '/hlavni.php?prep=1'; } };
-        }
+        $.when.apply($,requests).then(function(data, textStatus, jqXHR) {
+            var recount = shortcut_tools.xpath('//*[@id="info"]/ul[2]/li[7]/a', null, true);
+            if (recount != undefined) {
+                recount = recount.parentNode;
+                recount.parentNode.removeChild(recount);
+                flagship_missions.appendChild(recount);
+                var recount_span = recount.firstElementChild.nextElementSibling;
+                recount_span.onclick = function () { if (window.confirm('Opravdu?')) { window.location = '/hlavni.php?prep=1'; } };
+            }
+        });
     }, false);
 })();
