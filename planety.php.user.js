@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         planety.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.3
+// @version      0.4
 // @description  Utils for planety.php
 // @author       on/off
 // @match        http://stargate-dm.cz/planety.php*
@@ -23,6 +23,12 @@
         };
 
         this.planet_table_update = function() {
+            var move_people = tools.xpath('//*[@id="p_lidi"]', null, true);
+            if (move_people != undefined) {
+                var v = move_people.value.toString();
+                move_people.value = v.replace(/,/, '.');
+            }
+
             var planets = tools.xpath('//*[@id="statistika_ajax"]/table/tbody/tr/td/a');
             for(var i = 0; i < planets.snapshotLength; ++i) {
                 var this_planet = planets.snapshotItem(i);
