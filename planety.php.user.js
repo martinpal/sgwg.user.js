@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         planety.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.5
+// @version      0.6
 // @description  Utils for planety.php
 // @author       on/off
 // @match        http://stargate-dm.cz/planety.php*
@@ -46,14 +46,18 @@
                         if (this_row.firstElementChild.innerHTML.indexOf('KANLY') >= 0) { // cannot move pop of KANLY planets - exclude from counting
                             continue;
                         }
+                        var pop = this_row.firstElementChild.nextElementSibling;
+                        if(window.location.href.indexOf("http://stargate-dm.cz/") == 0) {
+                            pop = this_row.firstElementChild.nextElementSibling.nextElementSibling;
+                        }
                         var planet = { };
                         planet.name       = this_row.firstElementChild.firstElementChild.innerHTML;
                         planet.url        = this_row.firstElementChild.firstElementChild.href;
                         planet.id         = parseInt(planet.url.slice(planet.url.indexOf('id=')+3));
-                        planet.pop        = parseFloat(this_row.firstElementChild.nextElementSibling.innerHTML.replace(/ /g,'').replace(/,/,'.'));
-                        planet.free       = parseFloat(this_row.firstElementChild.nextElementSibling.nextElementSibling.innerHTML.replace(/ /g,'').replace(/,/,'.'));
-                        planet.unemployed = parseFloat(this_row.firstElementChild.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML.replace(/ /g,'').replace(/,/,'.'));
-                        planet.happiness  = parseInt(this_row.firstElementChild.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML);
+                        planet.pop        = parseFloat(pop.innerHTML.replace(/ /g,'').replace(/,/,'.'));
+                        planet.free       = parseFloat(pop.nextElementSibling.innerHTML.replace(/ /g,'').replace(/,/,'.'));
+                        planet.unemployed = parseFloat(pop.nextElementSibling.nextElementSibling.innerHTML.replace(/ /g,'').replace(/,/,'.'));
+                        planet.happiness  = parseInt(pop.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML);
                         planets.push(planet);
                         console.log(JSON.stringify(planet, null, 4));
                     }
