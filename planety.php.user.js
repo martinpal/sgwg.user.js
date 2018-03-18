@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         planety.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.6
+// @version      0.7
 // @description  Utils for planety.php
 // @author       on/off
 // @match        http://stargate-dm.cz/planety.php*
@@ -97,7 +97,7 @@
                         to_send = Math.min(target_pop - min_pop, planets[min_planet].free);
                     }
                     console.log(to_send);
-                    move_people.value = to_send;
+                    move_people.value = to_send.toFixed(3);
 
                     var from_planet_combo = tools.xpath('//*[@id="z_pl"]', null, true);
                     from_planet_combo.value = planets[max_planet].id;
