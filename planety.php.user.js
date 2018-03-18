@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         planety.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.4
+// @version      0.5
 // @description  Utils for planety.php
 // @author       on/off
 // @match        http://stargate-dm.cz/planety.php*
@@ -25,8 +25,81 @@
         this.planet_table_update = function() {
             var move_people = tools.xpath('//*[@id="p_lidi"]', null, true);
             if (move_people != undefined) {
-                var v = move_people.value.toString();
-                move_people.value = v.replace(/,/, '.');
+                if (move_people.value != '') {
+                    // bug workaround: change decimal ',' to decimal '.' - this is how server expects this input
+                    var v = move_people.value.toString();
+                    move_people.value = v.replace(/,/, '.');
+                } else {
+                    // if tne input is empty, then recommend a meaningful action towards balancing the number of inhabitants of all planets
+                    // find the planets with highest and lowest number of inhabitants and move as many inhabitants as necessary from one to the other so that one
+                    // of them has the right number of inhabitants, which is TOTAL_INHABITANTS/NUMBER_OF_PLANETS
+                    var city_rows = tools.xpath('//*[@id="statistika_ajax"]/table/tbody/tr');
+                    var planets = [ ];
+                    for (var r=0; r < city_rows.snapshotLength; ++r) {
+                        var this_row = city_rows.snapshotItem(r);
+                        if (this_row.firstElementChild.tagName == 'TH') { // first row - heading, not a planet
+                            continue;
+                        }
+                        if (this_row.firstElementChild.innerHTML == 'Celkem') { // last row of the table is not a planet
+                            break;
+                        }
+                        if (this_row.firstElementChild.innerHTML.indexOf('KANLY') >= 0) { // cannot move pop of KANLY planets - exclude from counting
+                            continue;
+                        }
+                        var planet = { };
+                        planet.name       = this_row.firstElementChild.firstElementChild.innerHTML;
+                        planet.url        = this_row.firstElementChild.firstElementChild.href;
+                        planet.id         = parseInt(planet.url.slice(planet.url.indexOf('id=')+3));
+                        planet.pop        = parseFloat(this_row.firstElementChild.nextElementSibling.innerHTML.replace(/ /g,'').replace(/,/,'.'));
+                        planet.free       = parseFloat(this_row.firstElementChild.nextElementSibling.nextElementSibling.innerHTML.replace(/ /g,'').replace(/,/,'.'));
+                        planet.unemployed = parseFloat(this_row.firstElementChild.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML.replace(/ /g,'').replace(/,/,'.'));
+                        planet.happiness  = parseInt(this_row.firstElementChild.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML);
+                        planets.push(planet);
+                        console.log(JSON.stringify(planet, null, 4));
+                    }
+
+                    var sum_pop = 0;
+                    $.each(planets, function(k, v) {
+                        sum_pop += v.pop;
+                    });
+                    console.log(sum_pop);
+                    var target_pop = sum_pop / planets.length;
+                    console.log(target_pop);
+
+                    var min_planet = -1;
+                    var min_pop = 9999999999999;
+                    $.each(planets, function(k, v) {
+                        if (min_pop > v.pop) {
+                            min_planet = k;
+                            min_pop = v.pop;
+                        }
+                    });
+                    console.log(JSON.stringify(planets[min_planet], null, 4));
+                    var max_planet = -1;
+                    var max_pop = -1;
+                    $.each(planets, function(k, v) {
+                        if (max_pop < v.pop) {
+                            max_planet = k;
+                            max_pop = v.pop;
+                        }
+                    });
+                    console.log(JSON.stringify(planets[max_planet], null, 4));
+
+                    var to_send = 0;
+                    if (Math.min(target_pop - min_pop, planets[min_planet].free) > max_pop - target_pop) {
+                        // min_planet can receive more pop thatn the max_planet can send
+                        to_send = max_pop - target_pop;
+                    } else {
+                        to_send = Math.min(target_pop - min_pop, planets[min_planet].free);
+                    }
+                    console.log(to_send);
+                    move_people.value = to_send;
+
+                    var from_planet_combo = tools.xpath('//*[@id="z_pl"]', null, true);
+                    from_planet_combo.value = planets[max_planet].id;
+                    var to_planet_combo = tools.xpath('//*[@id="na_pl"]', null, true);
+                    to_planet_combo.value = planets[min_planet].id;
+                }
             }
 
             var planets = tools.xpath('//*[@id="statistika_ajax"]/table/tbody/tr/td/a');
