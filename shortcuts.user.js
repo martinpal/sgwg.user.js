@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.15
+// @version      0.16
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -249,7 +249,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                 url: '/vlajkova.php',
                 success: function(parent, data, status) {
                     var jqr = $(jQuery.parseHTML(data));
-                    var flagship_mission_eta = jqr.find('#content-in > center:nth-child(11) > table > tbody > tr > td:nth-child(5)');
+                    var flagship_mission_eta = jqr.find('#content-in > center > table > tbody > tr > td:nth-child(5)');
                     $.each(flagship_mission_eta, function(parent, k, v) {
                         var flagship_mission_type = v.parentNode.firstElementChild.innerHTML.trim();
                         var li = document.createElement('li');
