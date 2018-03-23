@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.16
+// @version      0.18
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -25,6 +25,44 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             var type = qt ? XPathResult.FIRST_ORDERED_NODE_TYPE: XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE;
             var ret = document.evaluate(query, object, null, type, null);
             return (qt ? ret.singleNodeValue : ret);
+        };
+
+        this.resource_actuals = undefined;
+        this.get_resource_actuals = function() {
+            if (shortcut_tools.resource_actuals == undefined) {
+                $.ajax({
+                    async: false,
+                    type: 'GET',
+                    url: '/vlada.php?s=2',
+                    success: function(data, status) {
+                        shortcut_tools.set_resource_actuals(data);
+                    }
+                });
+            }
+            return shortcut_tools.resource_actuals;
+        };
+
+        this.set_resource_actuals = function(data) {
+            var jqr = $(jQuery.parseHTML(data));
+            var antihack_input = jqr.find('#content-in > center > div > form > p > input[type="hidden"]');
+            shortcut_tools.antihack = antihack_input[0].value;
+
+            var res = jqr.find('#content-in > center > div > form:nth-child(1) > table > tbody > tr:nth-child(5) > td:nth-child(2)');
+            var NT = res[0].innerHTML;
+            var res = jqr.find('#content-in > center > div > form:nth-child(1) > table > tbody > tr:nth-child(6) > td:nth-child(2)');
+            var NAQ = res[0].innerHTML;
+            var res = jqr.find('#content-in > center > div > form:nth-child(1) > table > tbody > tr:nth-child(7) > td:nth-child(2)');
+            var TRI = res[0].innerHTML;
+            shortcut_tools.resource_actuals = { NT: NT, NAQ: NAQ, TRI: TRI };
+            shortcut_tools.display_resource_actuals();
+        };
+
+        this.display_resource_actuals = function() {
+            if (document.getElementById('actual_NT')) {
+                document.getElementById('actual_NT' ).innerHTML = shortcut_tools.resource_actuals.NT;
+                document.getElementById('actual_NAQ').innerHTML = shortcut_tools.resource_actuals.NAQ;
+                document.getElementById('actual_TRI').innerHTML = shortcut_tools.resource_actuals.TRI;
+            }
         };
 
         this.get_policy = function(doc, selector) {
@@ -60,6 +98,35 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         GM_setValue(window.location.host+ '_' +key, value);
     }
 
+    function get_resource_actuals() {
+        if (shortcut_tools.resource_actuals == undefined) {
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '/vlada.php?s=2',
+                success: function(data, status) {
+                    set_resource_actuals(data);
+                }
+            });
+        }
+        return shortcut_tools.resource_actuals;
+    }
+
+    function set_resource_actuals (data) {
+        var jqr = $(jQuery.parseHTML(data));
+        var antihack_input = jqr.find('#content-in > center > div > form > p > input[type="hidden"]');
+        shortcut_tools.antihack = antihack_input[0].value;
+
+        var res = jqr.find('#content-in > center > div > form:nth-child(1) > table > tbody > tr:nth-child(5) > td:nth-child(2)');
+        var NT = res[0].innerHTML;
+        var res = jqr.find('#content-in > center > div > form:nth-child(1) > table > tbody > tr:nth-child(6) > td:nth-child(2)');
+        var NAQ = res[0].innerHTML;
+        var res = jqr.find('#content-in > center > div > form:nth-child(1) > table > tbody > tr:nth-child(7) > td:nth-child(2)');
+        var TRI = res[0].innerHTML;
+        shortcut_tools.resource_actuals = { NT: NT, NAQ: NAQ, TRI: TRI };
+        shortcut_tools.display_resource_actuals();
+    }
+
     addEventListener ("load", function() {
         var targ = document.getElementsByTagName ('head')[0] || document.body || document.documentElement;
         targ.appendChild (scriptNode);
@@ -69,6 +136,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         if (user_img == null) {
             return;
         }
+
+        var user_name = shortcut_tools.xpath('//*[@id="info"]/ul[1]/li[1]/a', null, true).innerHTML;
 
         var requests = [ ];
 
@@ -173,6 +242,74 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                 }.bind(this, races)
             }));
         }
+
+        get_resource_actuals();
+        var events_box = shortcut_tools.xpath('//*[@id="sidebar_events"]', null, true).parentNode;
+        var resource_sending_box = document.createElement('div');
+        resource_sending_box.className = 'box';
+        resource_sending_box.innerHTML = '<h2>Posílání</h2><div class="inbox" id="sidebar_resource_sending"></div>';
+        events_box.parentNode.insertBefore(resource_sending_box, events_box.nextElementSibling);
+        var previous_send_values = GM_getValue(window.location.host+ '_send');
+        if (previous_send_values == undefined) {
+            previous_send_values = { RCPT: user_name, NT: 100000, NAQ: 10000, TRI: 10000 };
+        }
+        var resource_sending = resource_sending_box.firstElementChild.nextElementSibling;
+        resource_sending.innerHTML =
+            '<div><span style="float: left; min-width: 50px;">Příjemce</span><input type="text" id="RCPT" name="RCPT" size="7" value="' +previous_send_values.RCPT+ '"></div>' +
+            '<div><span style="float: left; min-width: 50px;">NT</span>      <input type="text" id="NT"   name="NT"   size="7" value="' +previous_send_values.NT+   '">&nbsp;<span id="actual_NT" >' +shortcut_tools.resource_actuals.NT+  '</span></div>' +
+            '<div><span style="float: left; min-width: 50px;">NAQ</span>     <input type="text" id="NAQ"  name="NAQ"  size="7" value="' +previous_send_values.NAQ+  '">&nbsp;<span id="actual_NAQ">' +shortcut_tools.resource_actuals.NAQ+ '</span></div>' +
+            '<div><span style="float: left; min-width: 50px;">TRI</span>     <input type="text" id="TRI"  name="TRI"  size="7" value="' +previous_send_values.TRI+  '">&nbsp;<span id="actual_TRI">' +shortcut_tools.resource_actuals.TRI+ '</span></div>';
+        var send_button = document.createElement('input');
+        send_button.setAttribute('type', 'submit');
+        send_button.setAttribute('class', 'submit');
+        send_button.setAttribute('value', 'Poslat');
+        send_button.setAttribute('id', 'send_button');
+        send_button.onclick = function(recipient, nt, naq, tri) {
+            if (recipient == undefined) {
+                recipient =  document.getElementById('RCPT').value;
+            }
+            if (nt == undefined) {
+                nt =  document.getElementById('NT').value;
+            }
+            if (naq == undefined) {
+                naq = document.getElementById('NAQ').value;
+            }
+            if (tri == undefined) {
+                tri = document.getElementById('TRI').value;
+            }
+            var new_send_values = { RCPT: recipient, NT: nt, NAQ: naq, TRI: tri };
+            GM_setValue(window.location.host+ '_send', new_send_values);
+            console.log(recipient, nt, naq, tri);
+            var ajax_request = undefined;
+            if (this.antihack == undefined) {
+                ajax_request = $.ajax({
+                    async: true,
+                    type: 'GET',
+                    url: '/vlada.php?s=2',
+                    success: function(data, status) {
+                        var jqr = $(jQuery.parseHTML(data));
+                        var antihack_input = jqr.find('#content-in > center > div > form > p > input[type="hidden"]');
+                        this.antihack = antihack_input[0].value;
+                    }
+                });
+            };
+            $.when(ajax_request).then(function(data, textStatus, jqXHR) {
+                var post_body = 'antihack=' +this.antihack+ '&sur_hraci=' +recipient+ '&fond_desc=&kolikp=' +nt+ '&kolikn=' +naq+ '&kolikt=' +tri;
+                console.log(post_body);
+                $.ajax({
+                    type: 'POST',
+                    url:  '/vlada.php?s=2',
+                    data:  post_body,
+                    success: function(data, status) {
+                        set_resource_actuals(data);
+                        alert('Posláno');
+                    }
+                });
+            });
+        }.bind(this, undefined, undefined, undefined, undefined);
+
+        resource_sending.appendChild(send_button);
+
 
         // following is only for stargate-dm.cz
         if(window.location.href.indexOf("http://stargate-dm.cz/") != 0) {
