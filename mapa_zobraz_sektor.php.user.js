@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mapa_zobraz_sektor.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.1
+// @version      0.2
 // @description  Utils for mapa_zobraz_sektor.php
 // @author       on/off
 // @match        http://stargate-dm.cz/mapa_zobraz_sektor.php*
@@ -70,5 +70,22 @@
         }
         heading.parentNode.insertBefore(planet_iterator_div, heading);
 
+        var occupy_links = tools.xpath('//*[@id="planety"]/tbody/tr/td/a[2]');
+        for (var o = 0; o < occupy_links.snapshotLength; ++o) {
+            var this_link = occupy_links.snapshotItem(o);
+            if (this_link.innerHTML == "Obsadit") {
+                var sabotage_link = this_link.cloneNode(true);
+                sabotage_link.href = sabotage_link.href.replace(/jakej=1/, "jakej=7");
+                sabotage_link.innerHTML = "Sabotovat";
+                this_link.parentNode.appendChild(sabotage_link);
+                var nbsp = document.createElement('span');
+                nbsp.innerHTML = '&nbsp;';
+                this_link.parentNode.appendChild(nbsp);
+                var partisan_link = this_link.cloneNode(true);
+                partisan_link.href = sabotage_link.href.replace(/jakej=1/, "jakej=8");
+                partisan_link.innerHTML = "Partizánit";
+                this_link.parentNode.appendChild(partisan_link);
+            }
+        }
     }, false);
 })();
