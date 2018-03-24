@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.18
+// @version      0.19
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -86,7 +86,11 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
     function get_cached_value(key) {
         if (GM_getValue(window.location.host+ '_' +key) != undefined) {
-            var cache = JSON.parse(GM_getValue(window.location.host+ '_' +key));
+            console.log(key, GM_getValue(window.location.host+ '_' +key));
+            var cache = GM_getValue(window.location.host+ '_' +key);
+            try {
+                cache = JSON.parse(cache);
+            } catch(e) { }
             if (cache.millis + shortcut_tools.cache_validity > now) {
                 return cache.HTML;
             }
@@ -100,14 +104,21 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
     function get_resource_actuals() {
         if (shortcut_tools.resource_actuals == undefined) {
-            $.ajax({
-                async: false,
-                type: 'GET',
-                url: '/vlada.php?s=2',
-                success: function(data, status) {
-                    set_resource_actuals(data);
-                }
-            });
+            var cached_value = get_cached_value('resource_actuals');
+            if (cached_value == undefined) {
+                $.ajax({
+                    async: false,
+                    type: 'GET',
+                    url: '/vlada.php?s=2',
+                    success: function(data, status) {
+                        set_resource_actuals(data);
+                    }
+                });
+            } else {
+                console.log(cached_value);
+                shortcut_tools.resource_actuals = cached_value;
+                shortcut_tools.display_resource_actuals();
+            }
         }
         return shortcut_tools.resource_actuals;
     }
@@ -125,6 +136,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         var TRI = res[0].innerHTML;
         shortcut_tools.resource_actuals = { NT: NT, NAQ: NAQ, TRI: TRI };
         shortcut_tools.display_resource_actuals();
+        var resource_actuals_cache = { millis: now, HTML: shortcut_tools.resource_actuals };
+        set_cached_value('resource_actuals', JSON.stringify(resource_actuals_cache));
     }
 
     addEventListener ("load", function() {
