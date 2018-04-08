@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.21
+// @version      0.22
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -208,7 +208,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                     parent.setAttribute('style','color: #f55');
                 }
             } else if (can_build > 0) {
-                parent.setAttribute('style','color: #7f7');
+                if (free_slots > can_build) {
+                    parent.setAttribute('style','color: #7f7');
+                    item.previousElementSibling.setAttribute('style', 'border: 1px solid #7f7;');
+                } else {
+                    parent.setAttribute('style','color: #7f7');
+                }
             } else {
                 parent.setAttribute('style','color: #ff7');
             }
