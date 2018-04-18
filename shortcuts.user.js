@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.20
+// @version      0.21
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -148,33 +148,31 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         var user_img = shortcut_tools.xpath('//*[@id="info"]/img', null, true);
         if (user_img == null) {
             shortcut_tools.cache_validity = 1000*3600*24; // milliseconds; accept values from way longer than when logged in
-            var body = shortcut_tools.xpath('/html/body', null, true);
-            var info_div = document.createElement('div');
-            info_div.style = 'float: right; margin-top: 100px; text-align: left;';
+            var info_div = document.createElement('ul');
+            info_div.style = 'float: right; margin-top: 30px; margin-right: -320px; text-align: left; list-style-type: none; margin-left: 0; padding: 0;';
             $.each([
+                'races',
                 'resource_actuals',
                 'policies',
-                'races',
                 'flagships',
                 'hero_missions',
                 'flagship_missions',
             ], function (k,v) {
                 var cached_value = get_cached_value(v);
                 if (typeof cached_value == 'object') {
-                    info_div.innerHTML += '<ul>';
                     $.each(cached_value, function(k,v) {
                         if (v != undefined) {
                             info_div.innerHTML += '<li>' +k+ ': ' +v+ '</li>';
                         }
                     });
-                    info_div.innerHTML += '</ul>';
                 } else {
                     if (cached_value != undefined) {
                         info_div.innerHTML += cached_value;
                     }
                 }
             });
-            body.insertBefore(info_div, body.firstElementChild);
+            var logo = shortcut_tools.xpath('//*[@id="logo_index"]', null, true);
+            logo.parentNode.insertBefore(info_div, logo);
             return;
         }
 
