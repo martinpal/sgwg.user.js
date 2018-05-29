@@ -61,6 +61,12 @@
     color: rgb(240, 117, 40) !important;
 }
 
+/* stavby.php */
+#content-in > form > table > tbody > tr > td > table > tbody > tr > td > img {
+    width: 75px !important;
+    height: 75px !important;
+}
+
 /* nastenka rasy */
 #vladni_nastenka > div > strong:nth-child(11) > a:nth-child(6) > span {
     color: white !important;
