@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.21
+// @version      0.22
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -19,6 +19,110 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
     function my_shortcut_tools() {
         this.cache_validity = 300000; // milliseconds
+        this.ori_logo =
+            'data:image/png;base64,' +
+            'iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAQAAAAHUWYVAAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAA' +
+            'CxMAAAsTAQCanBgAAAAHdElNRQfiBR8TDCY3Gg9IAAAWMklEQVR42u2deXgV5dXAf+/cfclCSFiD' +
+            'rEaQQqWAqKC4wafWre6firut9tPnq9XWr9o+rVu11rbWPvXDre4K/dylagVEEFdQRGSRxYAkZCfJ' +
+            'zXpz753z/ZEguTMTklDKnQlz+IM8k7mTmfd3zznvOXPe84IrrrjiiiuuuOLK/hdBOv3c9Vndn+PK' +
+            'PoDR8X+OnCvfFa2bs8+WCS6UfzsOKZTHpUpErhHvHs8+SNZIo6ySOUa9cmWf4ZCg3CltNfKWlIr8' +
+            'VzdAZkrJ87JWRJf18h9O0hOv/VEoAL/MkoebhixjAT7GdP+xLLwreZuR6tyxRW/J4/xabXcGEM3u' +
+            'LlxRiozib80LVg+5h3m04evJRwMohY9t3MeTVF4ui+RU8TtBT7x2xgGKNr/vdO75ZvRC3sNLCL1n' +
+            'H/a0K5YHYRmbOb3oe6/4bpe5qrL9qi6QvRAFJHM8N7X95JPoP6ggsDdTMhR+ynmSrz2n3JYzUW5T' +
+            'a2SXGXSB9NZ3yAD+HDvvDe29nhqq3ZLqbJ28JFjEDs49+6BR+i3qLTsj0WyMYxAvVF/whLaEtt7f' +
+            'pm58TC/rmMvnk9RcfY5C2dabeG2Lo4DFVYfOZfvefWtSVo9axVPUDj/u97pP+5uyqZZ4bYojjw93' +
+            'jv4j1XurwjqiLMxBEy+THDjrd9Kk5tsTiWY3GKCQLJbVjb6nCxwePNDajc1pIhWx/EUrr7M0n/vl' +
+            'eGxpuGzoQ1JBXoiN/z21FjcnBJnKQPhKpfZ4kS+pOJVsiwFXtPAqnw7ir/IdXA3p3lg1atq9LSfO' +
+            'pdISx2Au5pza0C/1VXvO9qpquWPylzcw2iKPpVHPS2weyx9kgP1CRc1eOCByeeqy+dpmixtLcQiX' +
+            'M+1TLlN3eZr2bP9FaS/LhUNeuZ7DLZB4KeVF2TmbX4pyNWTPUCbx83ezVlj8po3JXMaI1/Q56jW6' +
+            'cccKRNDWcGn4/os41gJJgPXqVVLXc6nd/IhmJ/1I5fLTjUWLaDMNdyuHcxH9n0ld5Vnfk7CuPdJQ' +
+            'MW4N/fosZlog8fM+H8Dv9VH2QmIbIIqUps1quPgdqkw31cZELiR7nn6tt6rnuSiFoJq5L3TbD5hs' +
+            'yoEpFH+nJl/NtZdrt5HJ0vpx5xo+M91SisHMIWcJV3gaBdWL4VOAauYPkbnnM8KERKOVJ2CGXGwn' +
+            '167ZxWCJxqVVRYvRDQMuBJjDgGLOVi29/y4LoBq4vd/Cc8i2ePiv+DTE/0hAuUBM86vs1G/WsBGP' +
+            'ST9OoaiNc5O1YjHYIJoEJSpZkiVh8Xf+zS4dEVSZ/HZs8TGma4PiJRjBda7JMst1say3CZpwjOdI' +
+            'PDfrq31p2tER0QdlNKdzn7yeWJ5cyvPcLNOkoN17SJov0d7lkTPihRamqZZ3IpwneXYxWzbRVQlL' +
+            'ydJ+jxE26ECEi5n8plymVXaeWbX/LIdxln5Z1bAaamjEQz/yyCfnLR5KLfQ2dZ4aC4oKNWBJ8cx7' +
+            'LV5wDeWWBu+N6hF7jITXJgZrTrLfP036oTiUSTv5q1aJAUerJ3AlNxYXfc5attPSYZryKGLySROP' +
+            'Cz2i363t2J08VAhK9FtHLpoWXGZ6s1LDiqwjZ6We9zS6Jmu3kl6/gTLDzQhRZqK9klyUXvqmiAcC' +
+            'd/PAm0V/4zWKEUIECRKiiZU8xbxA5XXqURnaGaICtPd5+XRCJtPUwudwlDbFHkbLFj5En8KYRSZl' +
+            '1RhNUQnzfPF041On+e9I3fBYYAFl+PF2GnYNHwk+5HHKTuZxiZimALfkcQxtJg0tpXgo0+xhv7XM' +
+            'GyxQFzZ6N5jmQF6OgxVqoVGbcn7IdU94V5K0mDW1B3ybeYr6WdxvnG+prTx9LH6DJmhUsxGOliGu' +
+            'ydplsE5e6TE723zG7WR+55mHADKVG/4RWrXH6hONr3iFxFXyA2Ws8707hykkDecn2EbLdIbawWjZ' +
+            'wGTJZPJWWZiLo6GMF9Kdv0SZs7noA+LdXNPHO6yFRyW4G4lCYGPw/WkmIIodVOdyiCh1oAMRgBl6' +
+            'pNgERGNakrdVKt3oMCFx9fvs6MFt+3mW1jxuM7h24bHBHGR45a5RSSVMJ3rAmywFMO2rsPH1n85I' +
+            'om3y93RHKyEu2BL8okdzdY1q3oGr9X5pf0/n7azkOIOOKJqogGlEXB+CeBn5tdJNQL4HNdpHRreS' +
+            'uGRdjwsffCwmEVU/NniGhtA/R5mu4GEHjRNdIABF5G41OdMUE+C99KEUxfT63NU9LplTxFjp40yD' +
+            'lrWwcAD5hkmBopIWD8My/wYx80BGkF1pACLkUACL0+NzPJxXwTeWk92uHm45DJPpaccSfJbLIAMQ' +
+            'jWpaYELmxyPzQAY1h9tMBmsEGnxg8DaexCkbe1ps3SE7iGVzbKfVVwBV2dsKTEBqaYUiFwgU1IXM' +
+            'Lr0QUmqD4fCERGBTL5NvCTaFmLxb0xRAg29jnmlWlyQGow5wIAJQEAuYgQyEr02nH5VgWy8MVvuV' +
+            'tsJASZtp0UhxjimnpVFHsvAAB6IA+jdgBtIftphOP6yB+l7mm3RKoR/D0w42Uxa1yCw3ohdwoDt1' +
+            'CZBVZwIiZEOZ6dxDynupH6BTC1EGpg19gp1BU0ZL0YKed8ADIUKo2cJRh6HWBGRY7V6MV5LWMHmG' +
+            'g41+C18URwIuEMuct+CDZtPh/Ma9GC+dZr8pJZLULK6Uwg6SeSDSBSWz2oTie3X5hBe/4c/p5mIi' +
+            '1QFEDngg/yq7nnxGGRRSrKq7BIGM53udBCS1NwUACm+KhOXg7yvmfd+HdCF14b0YLw+hNpq61hjj' +
+            'rRzoJitBwmdhz5OYV0Gr0ty9AhJupc7A358yuSjpcDQHuslqojlscRNxyDId/Lqg10AUWdBAhXF6' +
+            'kLSIfcJoDQe8yVI6zRHTTSiaIN907up8fL0cMY3BUE9anxPRyGojaaohjqJVH+BABKAhbAGkHgpN' +
+            '9vwjP4W9zPZ6GA7VqjztYJD8ZtNbeSELrbyXl++TTr0mmvSYgFRj0fJnhY/RvQzfFEUJ1hrQhhnW' +
+            '0FHtmJ6u8ZQd4BqiACr7tXhMN1UGAyRkKK+u8394qKliZM/Sn4J6lhsOZjGyzjATFvyEYburIVCW' +
+            '3WSuWdwOcJgBnqj5QxncizETJkFMFqZXdpHVOK7GpB85BGGLCwS+IZZvGB4P35CC6aYJwIJcJpij' +
+            'vD3IzBRLtBaDTg5riFaZ6ojzCMI6FwhsJVZomv0nKIbjTW69KjR/okW5tLXoHEZuK48aSiWCzKil' +
+            'wvDgOgWEYKtyI3VVR9VwizK5L+BIXUs/rmI8PoLxPXTswmnwmfrIsGY3zPHl1Bn+os4gQutpyXx+' +
+            'yA6Vi5+PjJvrpFZDQJ1m6sG7Kue1aUR7oCMJZjAsyS9Nf29gw+EbTW9DfAzC+2nnFMuBGhgCfJLf' +
+            'nG06voNyP+cY13ioSh6eFJvUbYIjyQDOgPlqWfrKKxRnx0wrGXXy6Q8fu0Da5T2ax1t0JFnmYXpq' +
+            'kFFHkou9j5/MsD3qSIoIF9BvEzea8AdSV20x1T7qDKJAWKOSLhBA1bB+spj9wioSg7RL0gdU8LXq' +
+            '9w1c+p/kdelJUgQ4k4kxrlEVBv2AWYnhy021j4pCclZS6i5H2DVMrx+SMrdSqueDEKek8tJbXwie' +
+            'En48+qtrGWK5KCFJmPOY2apdG3vHnLuV27ay2eBBhBxGwXIpscMaKnss2HlOpaaYvvEplpOaqp1r' +
+            'Ohu1ju8PX/dTTiBOshMunQTDuZ5jaj2XpeblGIZdIaepSW+YIVHAmDgfa602MN/2eGOoqlk60yIp' +
+            'UsGyMOfqBynDqnNQWzg894kLuYOjCJIgSZIkY/ght3DwKnWSmu/V0w2QArh3E1+aZlheRpP1Gavs' +
+            'sejTLj0XHxw8+xC+Nsx+WviISSfknsX9nfsjdnRnaOJyeWjYPVcejexUDfgYIF6dcu5lrkq2Nxbo' +
+            'vFQU5EbGPGtR2ZXFFPhQbbTHok/bNPnQSz4Z+r8WzZJP4YwSzlafWHkfBUghJzGefsTZyntq+e7f' +
+            'GMzVaJYvHvQ85szyeK7/hivUYnu0xLSFhggKddeEBwsx1iam+ICiwnG3yNWqyjhg7VqjSnjUdC3T' +
+            '1dsC/LFi0GsW+uFjFqxUi+3y3bSHDwF4JlA22+TYPVTyBrVncJN4zI3GVA9UXlCsU76fxWc/S6vF' +
+            'V+FgxtbymH0aNNmnPVOj57bvMMaUy/WzltdI/Jyb9qata7tWjTufnywIbrI0EOcIy9Ub9rHdNgGi' +
+            '0IRX8j4/zlQEDV7e5zX4jfyi90gUILO5793+Sy0CyTizGdLCr9wGZtb5p0ru+i7ftVhFDot4Kcit' +
+            '8rveIRFATuTpFUNfpdWkAymGcxI8oFbbqcmfjYD4hMWRp45jgEV/xBQLeSbCf8uzqYjq0Z5SHR21' +
+            '5vD6pwOepsmydPQSglvkV7hNMLscwFoeGlt8VOfa6G+R6CznL4H4hdpymdr97gaCQpQ8qD+1PPiw' +
+            'hXZAK2czHM7Rkm4TzD0EROoDHjitraiLQf6Cu9h8mLwvd8vg3RlCy10LPXIEa1uvnc9jlrOxJFM5' +
+            'Bu/N6nO7dba2VWdnQZHwex+tnXM/ZZa3lsLPLGaQV+35Cy9SSa0xZZ5SWh6j+FH8ym08xzYLbQOd' +
+            'oVzN0JflAq0NF0h3SFJDteeKj3mESssFbEKcocxkLPl65A2W8CXVxGikjQA5DGAcpzWdXK59yFLE' +
+            '8go6/bmEQ1dwth13brNd73NBkZqoPbvhO09S0UXXhhRtDGYsoxlEHjlbfaVU0UyUoQ1F1VklbOQL' +
+            'YvgsH04nmwuZvIFL1ApsuIOIDTeZERT6VPXMxqKn2d7lVmA6KTQKyCOXKFn4iVNPLZVUEcfbhXPU' +
+            'iTKH723larUIW27oYksgoJCJzNs67nnZoIJ7OFfvmAL70EiRQKHtofd1ihyuYlwpl6h3sOmWR7bc' +
+            'rKwDyWieqJrxd1Z2YXx6K20cxLUMKuVMtRLb7tNm093jOlLrA/hj60Wv8K6pAXnvJc4MLiK0ltlq' +
+            'BzbeNs/Gm14KCj2kbuVnH/lfoPFfiKeFIGdxDNpzXKqSYuudPu18bx3fY/18dUds9DxtHc3sTTt+' +
+            'H2M4l8IablEPg71x2BzIruFLHaTdwax1g9+mhBjS4/RCiiCDmc7MRrWEX6i1OECU/W+xw598n6uY' +
+            'vqbgU9ZITPUESUrGqClM1XOW83T8yWDC/trhECDfIvFzCifx/cWFC6Sp2wX+KQ7Wr9AKlvCCvsDz' +
+            'za6Zm6sh+xhKwuu9Zud9Dwe2dGu24lzJ0ZvlWK3UOTDAQZ0c2hPuviSrwzXBHr0PiUJpOw7lnO+d' +
+            'k1prdAxqSzAW6JFGhWhvGOAcGA4D0iGN1Ad7BCQCNY57OgcCaaI+2qNysgjsdIHsFw3pCRAvPldD' +
+            '9hOQuuxugQhhlAtkv7j2BHVRvN0WObhA9lM0AtRGe6AhERfIfpOd0dbugYTQXCD7KRapiza5PsRO' +
+            'Uhdp7n6WFUa50979BYTmQA80BCEhLpD9AqQpu5sbFyKoGqelTRysITndDLUQQjnQYDkKyK6ad1VB' +
+            'Y480pELp9qps74l4nYOjXSdkOjMoyusGiE4/PF4Zr9YqnPGm0GFAOt4ZHsdVHFE2ahtrumnR5CEO' +
+            'E3lGNvFS83wlznlF5ZhXuHpYPcCpxQMXUkwLiW56Lwp5hClkChNr+Ui/xfO5U/TEIUUOepF6pa3o' +
+            'ec9KEj0smhNAI8BQzmd4sfxIW+gWOewzHDKGheUj/kTXG7p0bZKEbC5gyjZ+oFa5Jmvf4AjwZvlx' +
+            '99Bs0QjQR4QhDCSK0EAl22klYZhZpejPlRTN5xpV5zr1ffF9uUKf+qip8bFODoczMzWwlmbiJAEv' +
+            'QbI25C5hLW2dzvZQwbsMPT/yJ/lYuUD+ZR3xcfzH0UqLOOMKDi3mHyxiPdtUHCTEcKaNPXXs8a/m' +
+            'vU2iExI/qzmRUWfyWa96zLpALGUEhV9hXAqY4AQOrZbLtGWdtKmFDWzgSbn5mNs3+DendWuMUcXI' +
+            'qcoBYbD9bzFKuMGiudko2KQtEyXmWH5hvx1Zpm0jY6QKcIHsA4nTZt7NzsMmGK8foWT3rjjfFsTN' +
+            '3Dk8ZvI4QbRmJ+RR7A/kG8oPNq009LGQLdnqRbldH/7tGndEk1kyjzvfV9vSHkzIYjDaSpvsjOf4' +
+            'wPCnqTt/GyoxHfdzGicmtQS1fE0DIQoZgqfK96q20qAKcWZyPuEj+NgNDPcFkBCv7zzhPov3sUKA' +
+            '8YwmHz9J6ihnE1vRTObqIC6n8BFuVA2uhuybxMkw9WLr5Ee1jbSabjmFvistj0IzmCrwMZILGfKh' +
+            'XKQVu6mTfYYklas9yKxV+UsoJ0ayw313nUhp/xelgCnMinve1G/ybHFGxtdJC3bO4xKmrh+wnlJ2' +
+            '0khLF1Gewk+EbAZwCBOT2Sv4v+RDvmZ3wc6/A0mQ2cxgasuE6v71bGaBRS8TIZdjGUMOAzezgqWy' +
+            'UPvaSa+oHFcFUEnBSIYxkBvKjrzVoheKzgiuYuBc3qKULarWWeunHPQKd5eTVlBMMciUyBFiufW3' +
+            'H2+cl9XbnT7hIHFU1cmupWkCUJ7VxVAHCdbTsguG00yAE8uAOrbbU0QsciFCgHA9zU6syXIsEAAq' +
+            'INsyORVA1dHs1MdyLpByayAeQlDvAsnEdIssCyBeoi6QjPiRSiTHEkgEXJOVEak3b3gveAm7GpKZ' +
+            'iISSfl1pSL0SF8j+n/iW5FoA8RGGmHPV3skmyxKIl3Ar9c6reu8TQLItgj8fkSZiTg0LHQ7EY5r4' +
+            'Cl4iTdS7JisjQBQ5hq0tFH5ocn1IZmS7hjESUURdIJnUkFxTQVy2CyRjU98GpeeYgGSB60MyFRqq' +
+            '0lyDD2kHoppcIBkJDVWpWUOi4GAczvYhlkDCONlgOR5ItulxwgkXSOak1Es4TUc0Im3UuUAyJWVe' +
+            'Q6yuiCRcIJmTHRpRg4YE21yTlVGTla4hAXBNVgal2qgh2RCn1gWSqdAw4WnpXHmi2oHUuEAyFRrq' +
+            'Wnk0LVbPdYFkVHRPeVaahuRAXLmRul2AQDY0OPqJnA6E8lBaAX+OTqVz36f3CSC+TrG6IidFhXPf' +
+            'p/cJIP605ElOkkrXZNlIQyIpF0gmJ76SDiQCLpAMS4Pv22U7Qi4kqXCBZFIS3li4c1joakimgfiq' +
+            'XA2xFZBA9W4fkgsJFXeBZBQIVbtMlpALNc4OC50PpI2qEP5dUYhQ5uywsC9oSHWQANKuIcIOhz9P' +
+            'XzBZQYIdQPpBmQsks6FhgqpgRwNAD2FxgWReagIEEIQccIFkVgSgOSAhaAfimqwMGyyAlkBdu4b0' +
+            'czXEFtISrA3u0pA+AMTrfCC+2vZZVi60qqSrIRkHQl0Ird1k7XB6nN43gNRG8LUnTkqdHqf3ISB6' +
+            'BxDXZGVamqkNu0BsNPVNURfGQxi/C8QmoWF9GB/ZKChxgdghNIyF2jzkAs7P9fYFHwINkcYODXFN' +
+            'li2kPhrzkoOCcheILYAQ85ML9UoXF4gtgDRE6Y/a7vywsM9oSBZ5qO194Fn6BJAYDVnko0pcIPaY' +
+            '+iaIFRDpE1FIHwAiABXDxQ+uybJNaFg6qMnnaoiNZIeK4wKxkXzBm/SJsLDPiAyVU8Uj7kDYxq27' +
+            '4kJxxRVXXHHFFVdc2YP8P8QVGlpApTYAAAAAAElFTkSuQmCC';
 
         this.xpath = function(query, object, qt) {
             if( !object ) object = document;
@@ -273,7 +377,11 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                             return;
                         }
                         var span = document.createElement('span');
-                        span.innerHTML =  '<a href="/vesmir.php?jak=' +v.value+ '"><img src="/obr/logaras/' +v.value+ '.jpg" alt="' +v.innerHTML+ '" style="width: 56px; height: 56px;" /></a>';
+                        if (v.value != 8) {
+                            span.innerHTML =  '<a href="/vesmir.php?jak=' +v.value+ '"><img src="/obr/logaras/' +v.value+ '.jpg" alt="' +v.innerHTML+ '" style="width: 56px; height: 56px;" /></a>';
+                        } else {
+                            span.innerHTML =  '<a href="/vesmir.php?jak=' +v.value+ '"><img src="' +shortcut_tools.ori_logo+ '" alt="' +v.innerHTML+ '" style="width: 56px; height: 56px;" /></a>';
+                        }
                         parent.appendChild(span);
                     }.bind(this, parent));
                     race_cache.HTML = parent.innerHTML;
@@ -294,10 +402,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         }
         var resource_sending = resource_sending_box.firstElementChild.nextElementSibling;
         resource_sending.innerHTML =
-            '<div><span style="float: left; min-width: 50px;">Příjemce</span><input type="text" id="RCPT" name="RCPT" size="7" value="' +previous_send_values.RCPT+ '"></div>' +
-            '<div><span style="float: left; min-width: 50px;">NT</span>      <input type="text" id="NT"   name="NT"   size="7" value="' +previous_send_values.NT+   '">&nbsp;<span id="actual_NT" >' +shortcut_tools.resource_actuals.NT+  '</span></div>' +
-            '<div><span style="float: left; min-width: 50px;">NAQ</span>     <input type="text" id="NAQ"  name="NAQ"  size="7" value="' +previous_send_values.NAQ+  '">&nbsp;<span id="actual_NAQ">' +shortcut_tools.resource_actuals.NAQ+ '</span></div>' +
-            '<div><span style="float: left; min-width: 50px;">TRI</span>     <input type="text" id="TRI"  name="TRI"  size="7" value="' +previous_send_values.TRI+  '">&nbsp;<span id="actual_TRI">' +shortcut_tools.resource_actuals.TRI+ '</span></div>';
+            '<div><span style="float: left; min-width: 35px;">Komu</span><input type="text" id="RCPT" name="RCPT" size="9" value="' +previous_send_values.RCPT+ '"></div>' +
+            '<div><span style="float: left; min-width: 35px;">NT</span>  <input type="text" id="NT"   name="NT"   size="9" value="' +previous_send_values.NT+   '">&nbsp;<span id="actual_NT" >' +shortcut_tools.resource_actuals.NT+  '</span></div>' +
+            '<div><span style="float: left; min-width: 35px;">NAQ</span> <input type="text" id="NAQ"  name="NAQ"  size="9" value="' +previous_send_values.NAQ+  '">&nbsp;<span id="actual_NAQ">' +shortcut_tools.resource_actuals.NAQ+ '</span></div>' +
+            '<div><span style="float: left; min-width: 35px;">TRI</span> <input type="text" id="TRI"  name="TRI"  size="9" value="' +previous_send_values.TRI+  '">&nbsp;<span id="actual_TRI">' +shortcut_tools.resource_actuals.TRI+ '</span></div>';
         var send_button = document.createElement('input');
         send_button.setAttribute('type', 'submit');
         send_button.setAttribute('class', 'submit');
