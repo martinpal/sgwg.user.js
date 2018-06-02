@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         vesmir.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.2
+// @version      0.1
 // @description  Utils for vesmir.php
 // @author       on/off
 // @match        http://stargate-dm.cz/vesmir.php*
@@ -23,16 +23,6 @@
             return (qt ? ret.singleNodeValue : ret);
         };
 
-        this.getParameterByName = function (name, url) {
-            if (!url) url = window.location.href;
-            name = name.replace(/[\[\]]/g, "\\$&");
-            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, " "));
-        };
-
     }
     let tools = new my_tools();
 
@@ -44,11 +34,6 @@
 
         var targ = document.getElementsByTagName ('head')[0] || document.body || document.documentElement;
         targ.appendChild (scriptNode);
-
-        if (tools.getParameterByName("jak") == 8) {
-            var logo = tools.xpath('//*[@id="content-in"]/center[2]/img', null, true);
-            logo.src = shortcut_tools.ori_logo;
-        }
 
         var rows = tools.xpath('//*[@id="content-in"]/table/tbody/tr');
         var sums = [ ];
