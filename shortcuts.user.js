@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.21
+// @version      0.22
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -273,7 +273,11 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                             return;
                         }
                         var span = document.createElement('span');
-                        span.innerHTML =  '<a href="/vesmir.php?jak=' +v.value+ '"><img src="/obr/logaras/' +v.value+ '.jpg" alt="' +v.innerHTML+ '" style="width: 56px; height: 56px;" /></a>';
+                        var suffix = 'jpg';
+                        if (v.value == 18 && window.location.href.indexOf("http://stargate-dm.cz/") != 0) {
+                            suffix = 'png';
+                        }
+                        span.innerHTML =  '<a href="/vesmir.php?jak=' +v.value+ '"><img src="/obr/logaras/' +v.value+ '.' + suffix + '" alt="' +v.innerHTML+ '" style="width: 56px; height: 56px;" /></a>';
                         parent.appendChild(span);
                     }.bind(this, parent));
                     race_cache.HTML = parent.innerHTML;
