@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.22
+// @version      0.23
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -9,6 +9,7 @@
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_deleteValue
 // @license      GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
 // ==/UserScript==
 
@@ -100,6 +101,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
     function set_cached_value(key, value) {
         GM_setValue(window.location.host+ '_' +key, value);
+    }
+
+    function delete_cached_value(key, value) {
+        GM_deleteValue(window.location.host+ '_' +key);
     }
 
     function get_resource_actuals() {
@@ -201,6 +206,15 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             '<hr style="clear: both; display: block; visibility: hidden; height: 0; border: none;" />';
         head.appendChild(shortcuts);
 
+        // drop cached policy values when submitting form for change of policies (pracovna.php and politika.php)
+        if (window.location.pathname.indexOf('/pracovna.php') == 0) {
+            $('#content-in > form').submit(function() {
+                delete_cached_value('policies');
+            });
+            $('#content-in > form:nth-child(5)').submit(function() {
+                delete_cached_value('policies');
+            });
+        }
         // top overview of policies
         var policies = shortcut_tools.xpath('//*[@id="info"]/ul[2]', null, true);
         var cached_value = get_cached_value('policies');
