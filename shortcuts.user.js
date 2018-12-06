@@ -215,6 +215,20 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                 delete_cached_value('policies');
             });
         }
+        if (window.location.pathname.indexOf('/politika.php') == 0) {
+            var selectors = [
+                '#content-in > form:nth-child(7)',
+                '#content-in > form:nth-child(8)',
+                '#content-in > form:nth-child(9)',
+                '#content-in > form:nth-child(12)'
+            ];
+            for (var s = 0; s < selectors.length; ++s) {
+                $(selectors[s]).submit(function() {
+                    delete_cached_value('policies');
+                });
+            }
+        }
+
         // top overview of policies
         var policies = shortcut_tools.xpath('//*[@id="info"]/ul[2]', null, true);
         var cached_value = get_cached_value('policies');
