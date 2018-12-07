@@ -99,12 +99,34 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         return undefined;
     }
 
+    function get_cached_value2(key) {
+        if (GM_getValue(window.location.host+ '_' +key) != undefined) {
+            console.log(key, GM_getValue(window.location.host+ '_' +key));
+            var cache = GM_getValue(window.location.host+ '_' +key);
+            try {
+                cache = JSON.parse(cache);
+            } catch(e) { }
+            if (cache.millis + shortcut_tools.cache_validity > now) {
+                return cache;
+            }
+        }
+        return undefined;
+    }
+
     function set_cached_value(key, value) {
         GM_setValue(window.location.host+ '_' +key, value);
     }
 
     function delete_cached_value(key, value) {
         GM_deleteValue(window.location.host+ '_' +key);
+    }
+
+    function policy_cached_data_to_html(data) {
+        var policy_html = '';
+        for (var p = 0; p < data.length; ++p) {
+            policy_html +=  '<li><strong>' +data[p].k+ ':</strong> ' +data[p].v+ '</li>';
+        }
+        return policy_html;
     }
 
     function get_resource_actuals() {
@@ -231,18 +253,18 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
         // top overview of policies
         var policies = shortcut_tools.xpath('//*[@id="info"]/ul[2]', null, true);
-        var cached_value = get_cached_value('policies');
+        var cached_value = get_cached_value2('policies');
         if (cached_value != undefined) {
             console.log('Cached');
-            policies.innerHTML += cached_value;
+            policies.innerHTML += policy_cached_data_to_html(cached_value.data);
         } else {
             console.log('Reload');
-            var policy_cache = { millis: now, HTML: '' };
             requests.push($.ajax({
                 async: true,
                 type: 'GET',
                 url: '/politika.php',
                 success: function(parent, data, status) {
+                    var policy_cache = { millis: now, HTML: '', data: [] };
                     var jqr = $(jQuery.parseHTML(data));
                     var selectors = [
                         '#content-in > form:nth-child(6)  > table > tbody > tr > td:nth-child(1) > input[type="radio"]',
@@ -268,12 +290,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                         'Politika vůdce',
                     ];
                     for (var p = 0; p < selectors.length; ++p) {
-                        var li = document.createElement('li');
-                        li.innerHTML = '<strong>' +names[p]+ ':</strong> ' +shortcut_tools.get_policy(jqr, selectors[p]);
-                        parent.appendChild(li);
-                        policy_cache.HTML += li.outerHTML;
+                        policy_cache.data.push( { k: names[p], v: shortcut_tools.get_policy(jqr, selectors[p]) } );
                     }
                     set_cached_value('policies', JSON.stringify(policy_cache));
+                    parent.innerHTML += policy_cached_data_to_html(policy_cache.data);
                 }.bind(this, policies)
             }));
         }
