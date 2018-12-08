@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.23
+// @version      0.24
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -79,6 +79,30 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
     }
 
+    var preferred_policies = {
+        'elitky.php': { // buy army
+            'Zaměření': ['Patrioti'],
+            'Státní zřízení': ['Socialismus', 'Monarchie'],
+            'Armáda': ['odvedenecká'],
+            'Soustava': ['Vojenská  soustava'],
+            'Politika vůdce': ['Boj'],
+        },
+        'planety.php': { // colonize planets
+            'Zaměření': undefined,
+            'Státní zřízení': ['Socialismus'],
+            'Armáda': undefined,
+            'Soustava': undefined,
+            'Politika vůdce': ['Kolonizace'],
+        },
+        'stavby.php': { // build on planets
+            'Zaměření': ['Budovatelé'],
+            'Státní zřízení': ['Socialismus'],
+            'Armáda': undefined,
+            'Soustava': ['Koloniální soustava'],
+            'Politika vůdce': ['Infrastruktura'],
+        },
+    };
+
     var scriptNode          = document.createElement ('script');
     scriptNode.type         = "text/javascript";
     scriptNode.textContent  = my_shortcut_tools.toString() + 'let shortcut_tools = new my_shortcut_tools();';
@@ -122,9 +146,23 @@ this.$ = this.jQuery = jQuery.noConflict(true);
     }
 
     function policy_cached_data_to_html(data) {
+        var page = window.location.pathname.substring(1);
+        if (page.indexOf('?') != -1) {
+            page = page.substring(0, page.indexOf('?'));
+        }
         var policy_html = '';
         for (var p = 0; p < data.length; ++p) {
-            policy_html +=  '<li><strong>' +data[p].k+ ':</strong> ' +data[p].v+ '</li>';
+            var color = '';
+            if (page in preferred_policies && data[p].k in preferred_policies[page]) {
+                if (preferred_policies[page][data[p].k] == undefined) {
+                    color = 'color: #ff0;';
+                } else if ($.inArray(data[p].v, preferred_policies[page][data[p].k]) != -1) {
+                    color = 'color: #0e0;';
+                } else {
+                    color = 'color: #f00;';
+                }
+            }
+            policy_html +=  '<li style="' +color+ '"><strong>' +data[p].k+ ':</strong> ' +data[p].v+ '</li>';
         }
         return policy_html;
     }
