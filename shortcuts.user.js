@@ -162,7 +162,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                     color = 'color: #f00;';
                 }
             }
-            policy_html +=  '<li style="' +color+ '"><strong>' +data[p].k+ ':</strong> ' +data[p].v+ '</li>';
+            policy_html +=  '<li style="' +color+ '"><strong>' +data[p].k+ ':</strong> ' +data[p].v.replace(/^\w/, c => c.toUpperCase())+ '</li>';
         }
         return policy_html;
     }
