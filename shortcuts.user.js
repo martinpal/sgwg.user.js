@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.24
+// @version      0.25
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -209,12 +209,11 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         var targ = document.getElementsByTagName ('head')[0] || document.body || document.documentElement;
         targ.appendChild (scriptNode);
 
-        // do nothing if not logged in
+        // display overview (cached infmo) if not logged in
         var user_img = shortcut_tools.xpath('//*[@id="info"]/img', null, true);
         if (user_img == null) {
             shortcut_tools.cache_validity = 1000*3600*24; // milliseconds; accept values from way longer than when logged in
             var info_div = document.createElement('ul');
-            info_div.style = 'float: right; margin-top: 30px; margin-right: -320px; text-align: left; list-style-type: none; margin-left: 0; padding: 0;';
             $.each([
                 'races',
                 'resource_actuals',
@@ -223,20 +222,43 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                 'hero_missions',
                 'flagship_missions',
             ], function (k,v) {
-                var cached_value = get_cached_value(v);
-                if (typeof cached_value == 'object') {
-                    $.each(cached_value, function(k,v) {
-                        if (v != undefined) {
-                            info_div.innerHTML += '<li>' +k+ ': ' +v+ '</li>';
+                var cached_value2 = get_cached_value2(v);
+                if (cached_value2 != undefined) {
+                    if ('data' in cached_value2) {
+                        if (v == 'policies') {
+                            info_div.innerHTML += policy_cached_data_to_html(cached_value2.data);
+                        } else {
+                            console.log('Do not know how to render ' +k);
                         }
-                    });
-                } else {
-                    if (cached_value != undefined) {
-                        info_div.innerHTML += cached_value;
+                    } else {
+                        if ('HTML' in cached_value2) {
+                            var cached_value = cached_value2.HTML;
+                            if (typeof cached_value == 'object') {
+                                $.each(cached_value, function(k,v) {
+                                    if (v != undefined) {
+                                        info_div.innerHTML += '<li>' +k+ ': ' +v+ '</li>';
+                                    }
+                                });
+                            } else {
+                                if (cached_value != undefined) {
+                                    info_div.innerHTML += '<li>' +cached_value+ '</li>';
+                                }
+                            }
+                        }
                     }
                 }
             });
             var logo = shortcut_tools.xpath('//*[@id="logo_index"]', null, true);
+            if (logo == undefined) {
+                logo = shortcut_tools.xpath('//*[@id="content-in"]', null, true);
+                var hr = document.createElement('hr');
+                hr.style = 'clear: both;';
+                logo.parentNode.insertBefore(hr, logo);
+                logo = hr;
+                info_div.style = 'margin-top: 30px; text-align: left; list-style-type: none; margin-left: 22px; padding: 0;';
+            } else {
+                info_div.style = 'float: right; margin-top: 30px; margin-right: -320px; text-align: left; list-style-type: none; margin-left: 0; padding: 0;';
+            }
             logo.parentNode.insertBefore(info_div, logo);
             return;
         }
