@@ -84,7 +84,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             'Zaměření': ['Patrioti'],
             'Státní zřízení': ['Socialismus', 'Monarchie'],
             'Armáda': ['odvedenecká'],
-            'Soustava': ['Vojenská  soustava'],
+            'Soustava': ['Vojenská soustava'],
             'Politika vůdce': ['Boj'],
         },
         'planety.php': { // colonize planets
