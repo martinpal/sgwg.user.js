@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         stavby.php
 // @namespace    http://stargate-dm.cz/
-// @version      0.22
+// @version      0.23
 // @description  Utils for stavby.php
 // @author       on/off
 // @match        http://stargate-dm.cz/stavby.php*
@@ -91,6 +91,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             return parseInt(can_build_today_elem.innerHTML);
         };
 
+        this.update_built_number = function() {
+            var can_build_today_elem = this.xpath('//*[@id="content-in"]/table/tbody/tr[2]/td[4]',null,true);
+            var can_build_today = parseInt(can_build_today_elem.innerHTML);
+            can_build_today_elem.innerHTML = can_build_today+ ' budov / postaveno ' +this.changed_tiles;
+        };
+
         this.change_building = function(tile, what, img_src, is_change) {
             var color = "yellow";
             if (is_change) {
@@ -102,6 +108,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             document.getElementById('pp' +tile).style.borderColor=color;
             document.getElementById('pp' +tile).style.borderStyle="dotted";
             this.changed_tiles++;
+            this.update_built_number();
+            console.log('Changed tiles: ' + this.changed_tiles);
         };
 
         this.my_build = function(what,tile,count) {
@@ -169,6 +177,25 @@ this.$ = this.jQuery = jQuery.noConflict(true);
                         return;
                     }
                 }
+            }
+        };
+
+        // hijack of the default build function 'bud(adresa,budova)' - wrap it and count the changed tiles
+        this.my_build_hijack = function(orig_func, event) {
+            orig_func.call(event);
+            this.changed_tiles++;
+            this.update_built_number();
+            console.log('Changed tiles: ' + this.changed_tiles);
+        };
+
+        // hijack of the default build menu function 'objev(puda,id)' - wrap it and do call only if we are still below the limit of number of buildings we can build
+        this.my_build_menu = function(orig_func, event) {
+            var can_build_today = this.can_build_today();
+            console.log('Changed tiles: ' + this.changed_tiles + ' out of ' + can_build_today);
+            if (this.changed_tiles < can_build_today) {
+                orig_func.call(event);
+            } else {
+            console.log('Not showing the build menu');
             }
         };
     }
@@ -390,6 +417,20 @@ this.$ = this.jQuery = jQuery.noConflict(true);
             div.appendChild(cleaner);
             this.toolbox.appendChild(div);
         }.bind(this));
+
+        // install our own function for building
+        for (var t = 0; t < 4; ++t) {
+            var build_spans = tools.xpath('//*[@id="t' +t+ '"]/span');
+            for (var s = 0; s < build_spans.snapshotLength; ++s) {
+                build_spans.snapshotItem(s).onclick = tools.my_build_hijack.bind(tools, build_spans.snapshotItem(s).onclick);
+            }
+        }
+        // install our own function for build menu
+        for (var t = 1; t <= 64; ++t) {
+            var tile = tools.xpath('//*[@id="pp' +t+ '"]', null, true);
+            tile.onclick = tools.my_build_menu.bind(tools, tile.onclick);
+        }
+
         all.parentNode.insertBefore(toolbox, all);
     }, false);
 })();
