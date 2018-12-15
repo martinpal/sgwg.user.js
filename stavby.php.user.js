@@ -57,7 +57,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         this.picture_to_building_id['11'] = "c"; // this id is swapped with next line on the server, hence the need for this table
         this.picture_to_building_id['12'] = "b";
         this.picture_to_building_id['obr/budovy/brana'] = "b";   // hack for sgwg.net Kryona
-        this.picture_to_building_id['obr/budovy/razirna'] = "c"; // hack for sgwg.net Kruona
+        this.picture_to_building_id['obr/budovy/razirna'] = "c"; // hack for sgwg.net Kryona
 
         this.change_from = { };
         this.change_from['2'] = [ '3', 'c' ]; // TRI/min -> NAQ
