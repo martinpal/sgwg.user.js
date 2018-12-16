@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shortcuts
 // @namespace    http://stargate-dm.cz/
-// @version      0.25
+// @version      0.26
 // @description  Various shortcuts for the top of the page
 // @author       on/off
 // @match        http://stargate-dm.cz/*
@@ -20,6 +20,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
     function my_shortcut_tools() {
         this.cache_validity = 300000; // milliseconds
+
+        this.load_time = new Date();
+        this.format_load_time = function() {
+            var out = this.load_time.toTimeString();
+            out = out.substring(0, out.indexOf(' '));
+            return out;
+        };
 
         this.xpath = function(query, object, qt) {
             if( !object ) object = document;
@@ -274,6 +281,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
         var head = shortcut_tools.xpath('//*[@id="head"]', null, true);
         var shortcuts = document.createElement('div');
         shortcuts.innerHTML =
+            '<div style="float: left; margin: 0 0 0 294px; padding: 4px 12px; background-color: rgba(0,0,0,0.5);">' +
+            'Load time: ' +shortcut_tools.format_load_time()+
+            '</div>' +
             '<div style="float: right; padding: 4px 12px; background-color: rgba(0,0,0,0.5);">' +
             '<a href="/forum.php?kde=1"  style="text-decoration: none;"><span style="color:#0ff"     >NP</span></a>&nbsp;' +
             '<a href="/forum.php?kde=3"  style="text-decoration: none;"><span style="color:orange"   >OP</span></a>&nbsp;' +
