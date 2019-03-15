@@ -10,7 +10,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
-// @license      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @license      AGPL-3.0-or-later; http://www.gnu.org/licenses/agpl-3.0.txt
 // ==/UserScript==
 
 this.$ = this.jQuery = jQuery.noConflict(true);

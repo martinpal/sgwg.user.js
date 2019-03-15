@@ -6,7 +6,7 @@
 // @author       on/off
 // @match        http://sgwg.net/armada.php*
 // @grant        none
-// @license      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @license      AGPL-3.0-or-later; http://www.gnu.org/licenses/agpl-3.0.txt
 // ==/UserScript==
 
 (function() {

@@ -11,4 +11,4 @@ A user style is included - see custom.css. It is also available from https://use
 License
 =======
 
-GPL-3.0+; http://www.gnu.org/licenses/gpl-3.0.txt
+AGPL-3.0-or-later; http://www.gnu.org/licenses/agpl-3.0.txt

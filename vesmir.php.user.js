@@ -8,7 +8,7 @@
 // @match        http://sgwg.net/vesmir.php*
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // @grant        none
-// @license      GPL-3.0-or-later; http://www.gnu.org/licenses/gpl-3.0.txt
+// @license      AGPL-3.0-or-later; http://www.gnu.org/licenses/agpl-3.0.txt
 // ==/UserScript==
 
 (function() {
